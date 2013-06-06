@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: imgright
+# key: imgright
+# binding: direct-keybinding
+# --
+#+BEGIN_HTML
+<div class="img-right">
+<img src="$0"  class="img-polaroid"  /> 
+</div>
+#+END_HTML

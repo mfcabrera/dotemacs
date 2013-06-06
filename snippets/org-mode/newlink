@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: new link
+# key: nlnk
+# binding: direct-keybinding
+# --
+[[$1][$2]]

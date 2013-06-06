@@ -1,0 +1,2 @@
+((ac-python status "installed" recipe
+            (:name ac-python :description "Simple Python Completion Source for Auto-Complete" :type http :url "http://chrispoole.com/downloads/ac-python.el" :features ac-python)))

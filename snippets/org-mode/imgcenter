@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: imgcenter
+# key: imgcenter
+# binding: direct-keybinding
+# --
+#+BEGIN_HTML
+<div class="img-center">
+<img src="$0"  class="img-polaroid"  /> 
+</div>
+#+END_HTML

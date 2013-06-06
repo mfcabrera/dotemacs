@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: imgleft
+# key: imgleft
+# binding: direct-keybinding
+# --
+#+BEGIN_HTML
+<div class="img-left">
+<img src="$0"  class="img-polaroid"  /> 
+</div>
+#+END_HTML
