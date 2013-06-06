@@ -4,7 +4,7 @@
 
 ;; lets add some magit
 (require 'magit)
-
+(require 'magithub)
 
 ;; ruby
 ;; (require 'ri)
