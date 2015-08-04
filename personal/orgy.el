@@ -6,13 +6,79 @@
 (defun org-files-expand-path (files)
   (mapcar (lambda (d) (concat *ORGFILES-PATH* d)) files))
 
-(setq org-files-home '("home.org" "universidad.org"))
-;;(setq org-files-work '("gtd.org" "scm.org"))
-(setq org-files-util '("refile.org"))
+(defun mike/refile-to (file headline)
+    "Move current headline to specified location"
+    (let ((pos (save-excursion
+                 (find-file file)
+                 (org-find-exact-headline-in-buffer headline))))
+      (org-refile nil nil (list headline file nil pos))))
 
-(setq org-files-all (append org-files-home org-files-util))
-(setq org-agenda-files  (org-files-expand-path org-files-all)) 
+(defun mike/move-to-today ()
+    "Move current headline to today"
+    (interactive)
+    (org-mark-ring-push)
+    (mike/refile-to "~/Dropbox/Notational Data/TODAY.org.txt" "XXX")
+    (org-mark-ring-goto))
 
+
+
+;;(setq org-agenda-files  (org-files-expand-path org-files-all)) 
+;;(setq org-agenda-files '("~/Dropbox/Notational Data"))
+;; recursively find .org files in provided directory<
+;; modified from an Emacs Lisp Intro example
+(defun find-org-file-recursively (directory &optional filext)
+  "Return .org and .org_archive files recursively from DIRECTORY.
+If FILEXT is provided, return files with extension FILEXT instead."
+  ;; FIXME: interactively prompting for directory and file extension
+  (let* (org-file-list
+	 (case-fold-search t)		; filesystems are case sensitive
+	 (file-name-regex "^[^.#].*")	; exclude .*
+	 (filext (if filext filext "org$\\\|org_archive"))
+	 (fileregex (format "%s\\.\\(%s$\\)" file-name-regex filext))
+	 (cur-dir-list (directory-files directory t file-name-regex)))
+    ;; loop over directory listing
+    (dolist (file-or-dir cur-dir-list org-file-list) ; returns org-file-list
+      (cond
+       ((file-regular-p file-or-dir) ; regular files
+	(if (string-match fileregex file-or-dir) ; org files
+	    (add-to-list 'org-file-list file-or-dir)))
+       ((file-directory-p file-or-dir)
+	(dolist (org-file (sa-find-org-file-recursively file-or-dir filext)
+			  org-file-list) ; add files found to result
+	  (add-to-list 'org-file-list org-file)))))))
+
+
+
+;; recursively find .org files in provided directory
+;; modified from an Emacs Lisp Intro example
+(defun sa-find-org-file-recursively (directory &optional filext)
+  "Return .org and .org_archive files recursively from DIRECTORY.
+If FILEXT is provided, return files with extension FILEXT instead."
+  ;; FIXME: interactively prompting for directory and file extension
+  (let* (org-file-list
+	 (case-fold-search t)		; filesystems are case sensitive
+	 (file-name-regex "^[^.#].*")	; exclude .*
+	 (filext (if filext filext "org$\\\|org_archive"))
+	 (fileregex (format "%s\\.\\(%s$\\)" file-name-regex filext))
+	 (cur-dir-list (directory-files directory t file-name-regex)))
+    ;; loop over directory listing
+    (dolist (file-or-dir cur-dir-list org-file-list) ; returns org-file-list
+      (cond
+       ((file-regular-p file-or-dir) ; regular files
+	(if (string-match fileregex file-or-dir) ; org files
+	    (add-to-list 'org-file-list file-or-dir)))
+       ((file-directory-p file-or-dir)
+	(dolist (org-file (sa-find-org-file-recursively file-or-dir filext)
+			  org-file-list) ; add files found to result
+	  (add-to-list 'org-file-list org-file)))))))
+
+
+(setq org-agenda-files
+      (append (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org.txt")
+              (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org")))
+
+
+(define-key global-map "\C-cr" 'org-capture)
 
 
 ;; Colors and Faces
@@ -40,7 +106,8 @@
 (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META"))
 
 ;; notes for remember
-(setq org-default-notes-file  (concat *ORGFILES-PATH* "refile.org" ))
+(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
+
     
 
 ;; Misc options for org-mode
@@ -88,7 +155,7 @@
 ;;
 ;; REMEMBER SETUP
 ;;
-(org-remember-insinuate)
+;;(org-remember-insinuate)
 (setq org-directory *ORGFILES-PATH*)
 (define-key global-map "\C-cr" 'org-remember)
 
@@ -100,7 +167,7 @@
 
 (setq org-remember-default-headline "MISC")
 
-(setq org-default-notes-file (concat *ORGFILES-PATH* "refile.org"))
+(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
 
 ;; Start clock if a remember buffer includes :CLOCK-IN:
 (add-hook 'remember-mode-hook 'my-start-clock-if-needed 'append)
@@ -262,11 +329,12 @@
 (setq org-publish-mf "/Users/miguel/Dropbox/blog-stuff/mfcabrera.com/")
 (setq org-publish-mf-blog "/Users/miguel/Dropbox/blog-stuff/mfcabrera.com/")
 
-(require 'org-publish)
+;;(require 'org-publish)
 
 (setq org-publish-project-alist
     '(
-
+        ("mf" :components ("mf-org"
+                                 "mf-img"))
        ("mf-org"
                :base-directory "/Users/miguel/Dropbox/Notational Data"
                :recursive t 
@@ -274,7 +342,7 @@
                :publishing-directory "/Users/miguel/Dropbox/blog-stuff/mfcabrera.com/_posts"
                :site-root "http://mfcabrera.com"
                :jekyll-sanitize-permalinks t
-               :publishing-function org-publish-org-to-html
+               :publishing-function org-html-publish-to-html
                :section-numbers nil
                :headline-levels 4
                :table-of-contents nil
@@ -287,15 +355,23 @@
                :base-directory "/Users/miguel/Dropbox/blog-stuff/source/"
                :recursive t
                :exclude "^publish"
-               :base-extension "jpg\\|gif\\|png"
-               :publishing-directory "/Users/miguel/Dropbox/blog-stuff/mfcabrera.com/"
+               :base-extension "jpg\\|gif\\|png\\|jpeg"
+               :publishing-directory "/Users/miguel/Dropbox/blog-stuff/mfcabrera.com/files/images"
 
                :publishing-function org-publish-attachment)
 
-             ("mf" :components ("mf-org"
-                                 "mf-img"))
+        
 
 ))
+
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((R . t)
+   (emacs-lisp . t)
+   (python . t)
+   (sh . t)
+   ))
 
 
 

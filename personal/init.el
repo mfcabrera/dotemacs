@@ -24,8 +24,8 @@
 (show-paren-mode 1)
 (prefer-coding-system 'utf-8)
 ;; I want to be  misterioso
-(load-theme 'misterioso)
-
+;;(load-theme "zenburn")
+(color-theme-zenburn)
 ;; personal variables
 (setq case-fold-search t
       search-highlight t
@@ -49,6 +49,18 @@
 
 ;; we want ido
 (ido-mode t)
+
+(ido-ubiquitous t)
+(setq 
+      ido-enable-prefix nil 
+      ido-auto-merge-work-directories-length 0
+      ido-create-new-buffer 'always
+      ido-use-filename-at-point nil
+      ido-use-virtual-buffers t
+      ido-handle-duplicate-virtual-buffers 2
+      ido-max-prospects 20)
+(setq ido-everywhere t)
+
 
 ;; use y/n instead of yes/no
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -77,14 +89,14 @@
 ;;(add-to-list 'load-path "~/.emacs.d/vendor/org-mode/contrib/lisp")
 
 ;; Lets start loading file by file
-(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/personal")
 ;; load everything else
 (load "requires")
 (load "bindings")
 (load "personal")
 (load "orgy")
 (load "modes")
-
+(load "hooks")
 
 
 
