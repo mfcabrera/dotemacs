@@ -5,7 +5,7 @@
 (ansi-color-for-comint-mode-on)
 
 ;; hide all the chrome.
-(setq inhibit-startup-message t)	
+(setq inhibit-startup-message t)
 (menu-bar-mode 1)
 ;;(tool-bar-mode nil)
 ;(scroll-bar-mode nil)
@@ -25,7 +25,7 @@
 (prefer-coding-system 'utf-8)
 ;; I want to be  misterioso
 ;;(load-theme "zenburn")
-(color-theme-zenburn)
+;;(color-theme-zenburn)
 ;; personal variables
 (setq case-fold-search t
       search-highlight t
@@ -38,21 +38,21 @@
       transient-mark-mode t
       visible-bell t
       show-paren-delay 0)
-(delete-selection-mode 1) 
+(delete-selection-mode 1)
 
 (setq c-default-style "linux"
           c-basic-offset 4)
 
-;; nice parentheses 
-(show-paren-mode t)                  
-(setq show-paren-style 'expression) 
+;; nice parentheses
+(show-paren-mode t)
+(setq show-paren-style 'expression)
 
 ;; we want ido
 (ido-mode t)
 
 (ido-ubiquitous t)
-(setq 
-      ido-enable-prefix nil 
+(setq
+      ido-enable-prefix nil
       ido-auto-merge-work-directories-length 0
       ido-create-new-buffer 'always
       ido-use-filename-at-point nil
@@ -96,12 +96,11 @@
 (load "personal")
 (load "orgy")
 (load "modes")
-(load "hooks")
 
 
 
 ;; deft setup
-(when (require 'deft nil 'noerror) 
+(when (require 'deft nil 'noerror)
    (setq
       deft-extension "txt"
       deft-directory "~/Dropbox/Notational Data/"
@@ -109,4 +108,3 @@
       deft-use-filename-as-title t
       )
    (global-set-key (kbd "<C-f9>") 'deft))
-

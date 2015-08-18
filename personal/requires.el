@@ -17,24 +17,23 @@
 ;;(load "~/.emacs.d/vendor/nxhtml/autostart.el")
 
 ;; some useful modes
-(require 'textile-mode)
 (require 'markdown-mode)
 ;;(require 'haml-mode)
 
 (require 'yasnippet) ;; not yasnippet-bundl
-(yas/load-directory "~/.emacs.d/snippets")
+(yas/load-directory "~/.emacs.d/personal/snippets")
 (yas-global-mode 1)
 ;(setq yas/fallback-behavior 'return-nil) ;; customized due a bug of yasnippet with tab2key mode
 
- 
+
 ;; Autocompletion!
-(require 'auto-complete-config)
+;;(require 'auto-complete-config)
 ;;(add-to-list 'ac-dictionary-directories "/Users/miguel/.emacs.d/vendor//ac-dict")
-(ac-config-default)
+;;(ac-config-default)
 
 ;(require 'rsense)
 
-;; Emacs lisp python 
+;; Emacs lisp python
 ;;(elpy-enable)
 
 ;; emacs for python
@@ -48,10 +47,10 @@
 
 ;; iPython for coding and testin
 ;;(require 'python)
-(require 'ein)
-(require 'ein-notebook) 
-(require 'ein-dev)
-(setq ein:use-auto-complete-superpack t)
+;;(require 'ein)
+;;(require 'ein-notebook)
+;;(require 'ein-dev)
+;;(setq ein:use-auto-complete-superpack t)
 
 
 ; use the wx backend, for both mayavi and matplotlib
@@ -63,21 +62,9 @@
 (setq py-force-py-shell-name-p t)
 
 
-(require 'jira)
-
-
-;; (require 'eclim)
-;; (global-eclim-mode)
-;; ;; add the emacs-eclim source
-;; (require 'ac-emacs-eclim-source)
-;; (ac-emacs-eclim-config)
-
-
 (require 'org-crypt)
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance (quote ("crypt")))
 ;; GPG key to use for encryption
 ;; Either the Key ID or set to nil to use symmetric encryption.
-(setq org-crypt-key "0B800927")
-
-
+;;(setq org-crypt-key "0B800927")

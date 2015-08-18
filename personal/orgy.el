@@ -3,8 +3,6 @@
 ;;helper function for DRYing the creation of paths for org-mode files acrross systems
 ;;Need to have previously defined the variables *ORG-FILES-PATH* (i.e. in .emacs)
 
-(defun org-files-expand-path (files)
-  (mapcar (lambda (d) (concat *ORGFILES-PATH* d)) files))
 
 (defun mike/refile-to (file headline)
     "Move current headline to specified location"
@@ -22,7 +20,7 @@
 
 
 
-;;(setq org-agenda-files  (org-files-expand-path org-files-all)) 
+;;(setq org-agenda-files  (org-files-expand-path org-files-all))
 ;;(setq org-agenda-files '("~/Dropbox/Notational Data"))
 ;; recursively find .org files in provided directory<
 ;; modified from an Emacs Lisp Intro example
@@ -108,7 +106,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 ;; notes for remember
 (setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
 
-    
+
 
 ;; Misc options for org-mode
 (setq org-enforce-todo-dependencies t)
@@ -135,8 +133,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
 (defun my-org-mode-ask-effort ()
   "Ask for an effort estimate when clocking in."
   (unless (org-entry-get (point) "Effort")
-      (let ((effort 
-           (completing-read 
+      (let ((effort
+           (completing-read
             "Effort: "
             (org-entry-get-multivalued-property (point) "Effort"))))
       (unless (equal effort "")
@@ -145,8 +143,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
 (defun my-org-mode-ask-deadline ()
   "Ask for an deadline when changin a task to WAITING"
   (unless (org-entry-get (point) "Effort")
-    (let ((effort 
-           (completing-read 
+    (let ((effort
+           (completing-read
             "Effort: "
             (org-entry-get-multivalued-property (point) "Effort"))))
       (unless (equal effort "")
@@ -156,7 +154,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
 ;; REMEMBER SETUP
 ;;
 ;;(org-remember-insinuate)
-(setq org-directory *ORGFILES-PATH*)
 (define-key global-map "\C-cr" 'org-remember)
 
 ;; Keep clocks running
@@ -181,7 +178,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 
 ;; REMEMBER TEMPLATES
-(setq org-remember-templates 
+(setq org-remember-templates
       (
        quote (
               ("todo" ?t "* TODO %? \n%U " nil bottom nil)
@@ -204,15 +201,15 @@ If FILEXT is provided, return files with extension FILEXT instead."
 (setq org-outline-path-complete-in-steps t)
 
 
-      
-;;Fixme: 
+
+;;Fixme:
 (setq org-stuck-projects
       '("+PROJECT" nil ("NEXT" "PLANNED")
         ))
 
 (setq org-agenda-custom-commands
       '(
-        
+
         ("P" "Project List"
          ( (tags "PROJECT")
            )
@@ -222,7 +219,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
          ( (tags "PROJECT+CURRENT+PLANNED+@work")
            )
          )
-        
+
         ("X" "Not scheduled"
          ( (todo "TODO"
                  (
@@ -231,30 +228,30 @@ If FILEXT is provided, return files with extension FILEXT instead."
                  )
            )
          )
-              
+
         ("S" "Server List"
          ( (tags "SERVER")
            )
          )
-        
+
         ("p" "Tareas planeadas"
          ( (tags "PLANNED")
            )
          )
 
-         
+
         ("w" "Things to do at Work"
          (
-          
+
           (tags-todo "REFILE")
           (agenda "" ((org-agenda-ndays 1)
                       (org-agenda-filter-preset  '("+@work" ))
                       (org-agenda-sorting-strategy
                        (quote ((agenda time-up priority-down tag-up) )))
-                      (org-deadline-warning-days 0)                      
+                      (org-deadline-warning-days 0)
                       ))
           )
-         
+
          )
 
         ("h" "thing TODO at Home"
@@ -265,22 +262,22 @@ If FILEXT is provided, return files with extension FILEXT instead."
                       (org-agenda-filter-preset  '("+@home" ))
                       (org-agenda-sorting-strategy
                        (quote ((agenda time-up priority-down tag-up) )))
-                      (org-deadline-warning-days 0)                      
+                      (org-deadline-warning-days 0)
                       ))
-          
+
           )
-         
+
          )
-        
-        
+
+
         ("W" "Weekly Review"
          ((agenda "" ((org-agenda-ndays 7))) ;; review upcoming deadlines and appointments
-          ;; type "l" in the agenda to review logged items 
+          ;; type "l" in the agenda to review logged items
           (stuck "") ;; review stuck projects as designated by org-stuck-projects
           (todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
           (todo "MAYBE") ;; review someday/maybe items
-          (todo "WAITING"))) ;; review waiting items        
-        
+          (todo "WAITING"))) ;; review waiting items
+
          ("D" "Daily Action List"
           (
            (agenda "" ((org-agenda-ndays 1)
@@ -289,19 +286,19 @@ If FILEXT is provided, return files with extension FILEXT instead."
                        (org-deadline-warning-days 0)
                        ))))
 
-        
-        
-        ("E" "Errands review" 
+
+
+        ("E" "Errands review"
          ((agenda "" (
                       (org-agenda-ndays 5)          ;; agenda will start in week view
                       (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp "ERRANDS" ))
-                      
+
                       )
-                  
-                  
+
+
                   )
-          (tags "ERRANDS")          
-          ) 
+          (tags "ERRANDS")
+          )
          )
         ;; limits agenda view to timestamped items
         ;; ...other commands here
@@ -310,17 +307,17 @@ If FILEXT is provided, return files with extension FILEXT instead."
          ( (tags "PROJECT+@home+CURRENT")
            )
          )
-        
-        
+
+
         ("W" "Weekly Plan"
          ( (agenda)
            (todo "TODO")
            (tags "PROJECT")
-           
+
            )
          )
         )
-        
+
       )
 
 
@@ -337,7 +334,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
                                  "mf-img"))
        ("mf-org"
                :base-directory "/Users/miguel/Dropbox/Notational Data"
-               :recursive t 
+               :recursive t
                :base-extension "blog.org.txt"
                :publishing-directory "/Users/miguel/Dropbox/blog-stuff/mfcabrera.com/_posts"
                :site-root "http://mfcabrera.com"
@@ -360,7 +357,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
                :publishing-function org-publish-attachment)
 
-        
+
 
 ))
 
@@ -372,8 +369,3 @@ If FILEXT is provided, return files with extension FILEXT instead."
    (python . t)
    (sh . t)
    ))
-
-
-
-
-

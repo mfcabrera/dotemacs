@@ -65,7 +65,7 @@
   (interactive)
   (shrink-window-if-larger-than-buffer)
   (shell-command "cd ~/development ; rsync  -az --progress utiluigi  vmx: & " ))
-  
+
 (defun sync-perso ()
   (interactive)
   (shrink-window-if-larger-than-buffer)
@@ -130,7 +130,7 @@
   ;; When started from Emacs.app or similar, ensure $PATH
   ;; is the same the user would see in Terminal.app
   (set-exec-path-from-shell-PATH))
-		 
+
 
 
 ;; Copyright (c) 2014 Alexey Kutepov a.k.a. rexim
@@ -147,33 +147,33 @@
         (substring html (+ start chars-to-skip) end)
       nil)))
 
-(defun prepare-cliplink-title (title)
-  (let ((replace-table '(("\\[" . "{")
-                         ("\\]" . "}")
-                         ("&mdash;" . "—")))
-        (max-length 77)
-        (result (straight-string title)))
-    (dolist (x replace-table)
-      (setq result (replace-regexp-in-string (car x) (cdr x) result)))
-    (when (> (length result) max-length)
-      (setq result (concat (substring result 0 max-length) "...")))
-    result))
+;; (defun prepare-cliplink-title (title)
+;;   (let ((replace-table '(("\\[" . "{")
+;;                          ("\\]" . "}")
+;;                          ("&mdash;" . "—")))
+;;         (max-length 77)
+;;         (result (straight-string title)))
+;;     (dolist (x replace-table)
+;;       (setq result (replace-regexp-in-string (car x) (cdr x) result)))
+;;     (when (> (length result) max-length)
+;;       (setq result (concat (substring result 0 max-length) "...")))
+;;     result))
 
-(defun perform-cliplink (buffer url content)
-  (let* ((decoded-content (decode-coding-string content 'utf-8))
-         (title (prepare-cliplink-title
-                 (extract-title-from-html decoded-content))))
-    (with-current-buffer buffer
-      (insert (format "[[%s][%s]]" url title)))))
+;; (defun perform-cliplink (buffer url content)
+;;   (let* ((decoded-content (decode-coding-string content 'utf-8))
+;;          (title (prepare-cliplink-title
+;;                  (extract-title-from-html decoded-content))))
+;;     (with-current-buffer buffer
+;;       (insert (format "[[%s][%s]]" url title)))))
 
-(defun cliplink ()
-  (interactive)
-  (let ((dest-buffer (current-buffer))
-        (url (substring-no-properties (current-kill 0))))
-    (url-retrieve
-     url
-     `(lambda (s)
-        (perform-cliplink ,dest-buffer ,url
-                          (buffer-string))))))
+;; (defun cliplink ()
+;;   (interactive)
+;;   (let ((dest-buffer (current-buffer))
+;;         (url (substring-no-properties (current-kill 0))))
+;;     (url-retrieve
+;;      url
+;;      `(lambda (s)
+;;         (perform-cliplink ,dest-buffer ,url
+;;                           (buffer-string))))))
 
-(global-set-key (kbd "C-x p i") 'cliplink)
+;; (global-set-key (kbd "C-x p i") 'cliplink)
