@@ -132,7 +132,6 @@
   (set-exec-path-from-shell-PATH))
 
 
-
 ;; Copyright (c) 2014 Alexey Kutepov a.k.a. rexim
 
 

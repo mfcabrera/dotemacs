@@ -48,18 +48,18 @@
 (setq show-paren-style 'expression)
 
 ;; we want ido
-(ido-mode t)
+;;(ido-mode t)
 
-(ido-ubiquitous t)
-(setq
-      ido-enable-prefix nil
-      ido-auto-merge-work-directories-length 0
-      ido-create-new-buffer 'always
-      ido-use-filename-at-point nil
-      ido-use-virtual-buffers t
-      ido-handle-duplicate-virtual-buffers 2
-      ido-max-prospects 20)
-(setq ido-everywhere t)
+;; (ido-ubiquitous t)
+;; (setq
+;;       ido-enable-prefix nil
+;;       ido-auto-merge-work-directories-length 0
+;;       ido-create-new-buffer 'always
+;;       ido-use-filename-at-point nil
+;;       ido-use-virtual-buffers t
+;;       ido-handle-duplicate-virtual-buffers 2
+;;       ido-max-prospects 20)
+;; (setq ido-everywhere t)
 
 
 ;; use y/n instead of yes/no
@@ -106,5 +106,12 @@
       deft-directory "~/Dropbox/Notational Data/"
       deft-text-mode 'org-mode
       deft-use-filename-as-title t
+      deft-auto-save-interval 60
       )
    (global-set-key (kbd "<C-f9>") 'deft))
+
+
+;; python setplist
+
+(when (executable-find "ipython")
+  (setq python-shell-interpreter "ipython")

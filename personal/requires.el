@@ -21,7 +21,7 @@
 ;;(require 'haml-mode)
 
 (require 'yasnippet) ;; not yasnippet-bundl
-(yas/load-directory "~/.emacs.d/personal/snippets")
+(yas/load-directory "~/.emacs.d/snippets")
 (yas-global-mode 1)
 ;(setq yas/fallback-behavior 'return-nil) ;; customized due a bug of yasnippet with tab2key mode
 
@@ -34,12 +34,12 @@
 ;(require 'rsense)
 
 ;; Emacs lisp python
-;;(elpy-enable)
+(elpy-enable)
 
 ;; emacs for python
 ;;(require 'epy-setup)      ;; It will setup other loads, it is required!
-;(require 'epy-python)     ;; If you want the python facilities [optional]
-;(require 'epy-completion) ;; If you want the autocompletion settings [optional]
+;;(require 'epy-python)     ;; If you want the python facilities [optional]
+;;(require 'epy-completion) ;; If you want the autocompletion settings [optional]
 ;;(require 'epy-editing)    ;; For configurations related to editing [optional]
 ;;(require 'epy-bindings)   ;; For my suggested keybindings [optional]
 ;;(require 'epy-nose)       ;; For nose integration
@@ -54,12 +54,12 @@
 
 
 ; use the wx backend, for both mayavi and matplotlib
-(setq py-python-command-args
-      '("--gui=osx" "--pylab=inline" "--colors=Linux"))
-(setq-default py-shell-name "ipython")
-(setq-default py-which-bufname "IPython")
+;;(setq py-python-command-args
+;;      '("--gui=osx" "--pylab=inline" "--colors=Linux"))
+;;(setq-default py-shell-name "ipython")
+;;(setq-default py-which-bufname "IPython")
 ;;(require 'python-mode)
-(setq py-force-py-shell-name-p t)
+;;(setq py-force-py-shell-name-p t)
 
 
 (require 'org-crypt)
