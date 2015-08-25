@@ -63,18 +63,17 @@ If FILEXT is provided, return files with extension FILEXT instead."
     (dolist (file-or-dir cur-dir-list org-file-list) ; returns org-file-list
       (cond
        ((file-regular-p file-or-dir) ; regular files
-	(if (string-match fileregex file-or-dir) ; org files
-	    (add-to-list 'org-file-list file-or-dir)))
+	(if (and  (string-match fileregex file-or-dir) (not (string-match "blog.org.txt" file-or-dir))) ; org files but not blog entries
+	    (add-to-list 'org-file-list file-or-dir))
+        )
        ((file-directory-p file-or-dir)
 	(dolist (org-file (sa-find-org-file-recursively file-or-dir filext)
 			  org-file-list) ; add files found to result
 	  (add-to-list 'org-file-list org-file)))))))
 
-
 (setq org-agenda-files
       (append (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org.txt")
               (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org")))
-
 
 (define-key global-map "\C-cr" 'org-capture)
 
@@ -101,7 +100,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 ;; Org Mode Behaviour
 ;; Avoid tags inheritance for specific tags
-(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META"))
+(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META"))
+
 
 ;; notes for remember
 (setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
@@ -210,8 +210,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
 (setq org-agenda-custom-commands
       '(
 
-        ("P" "Project List"
-         ( (tags "PROJECT")
+        ("P" "Current Project List"
+         ( (tags "PROJECT+current")
            )
          )
 
@@ -280,6 +280,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
          ("D" "Daily Action List"
           (
+           (tags-todo "email")
            (agenda "" ((org-agenda-ndays 1)
                        (org-agenda-sorting-strategy
                         (quote ((agenda time-up priority-down tag-up) )))
@@ -319,7 +320,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
         )
 
       )
-
 
 ;;TODO Create variables based on the enviroment (Windows, Linux...etc)
 ;; IMPORANT this is for generating the blog
@@ -369,3 +369,11 @@ If FILEXT is provided, return files with extension FILEXT instead."
    (python . t)
    (sh . t)
    ))
+
+
+;; Set to the location of your Org files on your local system
+(setq org-directory "~/Dropbox/Notational Data")
+;; Set to the name of the file where new notes will be stored
+(setq org-mobile-inbox-for-pull "~/Dropbox/Notational Data/flagged.org")
+;; Set to <your Dropbox root directory>/MobileOrg.
+(setq org-mobile-directory "~/Dropbox/Aplicaciones/MobileOrg")

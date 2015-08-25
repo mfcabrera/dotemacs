@@ -89,7 +89,7 @@
 ;;(add-to-list 'load-path "~/.emacs.d/vendor/org-mode/contrib/lisp")
 
 ;; Lets start loading file by file
-;;(add-to-list 'load-path "~/.emacs.d/personal")
+(add-to-list 'load-path "~/.emacs.d/personal")
 ;; load everything else
 (load "requires")
 (load "bindings")
