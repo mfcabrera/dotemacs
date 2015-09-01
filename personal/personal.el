@@ -176,3 +176,6 @@
 ;;                           (buffer-string))))))
 
 ;; (global-set-key (kbd "C-x p i") 'cliplink)
+
+
+(add-hook 'term-mode-hook (lambda () (yas-minor-mode -1)))

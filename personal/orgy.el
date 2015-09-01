@@ -18,35 +18,6 @@
     (mike/refile-to "~/Dropbox/Notational Data/TODAY.org.txt" "XXX")
     (org-mark-ring-goto))
 
-
-
-;;(setq org-agenda-files  (org-files-expand-path org-files-all))
-;;(setq org-agenda-files '("~/Dropbox/Notational Data"))
-;; recursively find .org files in provided directory<
-;; modified from an Emacs Lisp Intro example
-(defun find-org-file-recursively (directory &optional filext)
-  "Return .org and .org_archive files recursively from DIRECTORY.
-If FILEXT is provided, return files with extension FILEXT instead."
-  ;; FIXME: interactively prompting for directory and file extension
-  (let* (org-file-list
-	 (case-fold-search t)		; filesystems are case sensitive
-	 (file-name-regex "^[^.#].*")	; exclude .*
-	 (filext (if filext filext "org$\\\|org_archive"))
-	 (fileregex (format "%s\\.\\(%s$\\)" file-name-regex filext))
-	 (cur-dir-list (directory-files directory t file-name-regex)))
-    ;; loop over directory listing
-    (dolist (file-or-dir cur-dir-list org-file-list) ; returns org-file-list
-      (cond
-       ((file-regular-p file-or-dir) ; regular files
-	(if (string-match fileregex file-or-dir) ; org files
-	    (add-to-list 'org-file-list file-or-dir)))
-       ((file-directory-p file-or-dir)
-	(dolist (org-file (sa-find-org-file-recursively file-or-dir filext)
-			  org-file-list) ; add files found to result
-	  (add-to-list 'org-file-list org-file)))))))
-
-
-
 ;; recursively find .org files in provided directory
 ;; modified from an Emacs Lisp Intro example
 (defun sa-find-org-file-recursively (directory &optional filext)
@@ -223,7 +194,10 @@ If FILEXT is provided, return files with extension FILEXT instead."
         ("X" "Not scheduled"
          ( (todo "TODO"
                  (
-                  (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline 'timestamp))
+                  (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline 'timestamp 'regexp "desparche"
+
+
+                                                                       ))
                   )
                  )
            )
@@ -377,3 +351,97 @@ If FILEXT is provided, return files with extension FILEXT instead."
 (setq org-mobile-inbox-for-pull "~/Dropbox/Notational Data/flagged.org")
 ;; Set to <your Dropbox root directory>/MobileOrg.
 (setq org-mobile-directory "~/Dropbox/Aplicaciones/MobileOrg")
+
+(require 'calfw-org)
+
+
+;; Some function to parse custom rss
+
+(defun org-feed-parse-rss-sputnik (buffer)
+  "Parse BUFFER for RSS feed entries.
+Returns a list of entries, with each entry a property list,
+containing the properties `:guid' and `:item-full-text'."
+  (let ((case-fold-search t)
+	entries beg end item guid entry)
+    (with-current-buffer buffer
+      (widen)
+      (goto-char (point-min))
+      (while (re-search-forward "<entry\\>.*?>" nil t)
+	(setq beg (point)
+	      end (and (re-search-forward "</entry>" nil t)
+		       (match-beginning 0)))
+	(setq item (buffer-substring beg end)
+	      guid (if (string-match "<id\\>.*?>\\(.*?\\)</id>" item)
+		       (org-match-string-no-properties 1 item)))
+	(setq entry (list :guid guid :item-full-text item))
+	(push entry entries)
+	(widen)
+	(goto-char end))
+      (nreverse entries))))
+
+
+(defun org-feed-parse-atom-entry-sputik (entry)
+  "Parse the `:item-full-text' as a sexp and create new properties."
+  (let ((xml (car (read-from-string (plist-get entry :item-full-text)))))
+    ;; Get first <link href='foo'/>.
+    (setq entry (plist-put entry :link
+			   (xml-get-attribute
+			    (car (xml-get-children xml 'link))
+			    'href)))
+    ;; Add <title/> as :title.
+    (setq entry (plist-put entry :title
+			   (xml-substitute-special
+			    (car (xml-node-children
+				  (car (xml-get-children xml 'title)))))))
+    (setq entry (plist-put entry :summary
+			   (xml-substitute-special
+			    (car (xml-node-children
+				  (car (xml-get-children xml 'summary)))))))
+
+    (let* ((content (car (xml-get-children xml 'content)))
+	   (type (xml-get-attribute-or-nil content 'type)))
+      (when content
+	(cond
+	 ((string= type "text")
+	  ;; We like plain text.
+	  (setq entry (plist-put entry :description
+				 (xml-substitute-special
+				  (car (xml-node-children content))))))
+	 ((string= type "html")
+	  ;; TODO: convert HTML to Org markup.
+	  (setq entry (plist-put entry :description
+				 (xml-substitute-special
+				  (car (xml-node-children content))))))
+	 ((string= type "xhtml")
+	  ;; TODO: convert XHTML to Org markup.
+	  (setq entry (plist-put entry :description
+				 (prin1-to-string
+				  (xml-node-children content)))))
+	 (t
+	  (setq entry (plist-put entry :description
+				 (prin1-to-string
+				  (xml-node-children content))))))))
+    entry))
+
+(defcustom org-feed-save-after-adding t
+  "Non-nil means save buffer after adding new feed items."
+  :group 'org-feed
+  :type 'boolean)
+
+(setq org-feed-alist
+      '(
+        ("Data Tau"
+         "http://www.datatau.com/rss"
+         "~/Dropbox/Notational Data/tech-feed.org.txt" "DataTau")
+
+        ("Sputnik"
+       "http://www.sputnik-kino.com/program.rss"
+       "~/Dropbox/Notational Data/kino-feed.org.txt" "Sputnik Kino" :parse-entry org-feed-parse-atom-entry-sputik
+       :template  "\n* %h %summary \n  %U\n %link \n %description\n\n"
+       :parse-feed org-feed-parse-atom-feed)
+
+       ("News YC"
+       "http://news.ycombinator.com/rss"
+       "~/Dropbox/Notational Data/tech-feed.org.txt" "News YC")
+
+      ))
