@@ -1,5 +1,5 @@
 ;; don't use tabs
-(setq-default indent-tabs-mode nil)
+;;(setq-default indent-tabs-mode nil)
 
 ; interpret and use ansi color codes in shell output windows
 (ansi-color-for-comint-mode-on)
@@ -101,17 +101,22 @@
 
 ;; deft setup
 (when (require 'deft nil 'noerror)
-   (setq
-      deft-extension "txt"
-      deft-directory "~/Dropbox/Notational Data/"
-      deft-text-mode 'org-mode
-      deft-use-filename-as-title t
-      deft-auto-save-interval 60
-      )
-   (global-set-key (kbd "<C-f9>") 'deft))
+  (setq
+   deft-extensions '("txt" "tex" "org" "org.txt" "md" "blog.org.txt" "text" "notes.org.txt")
+   deft-directory "~/Dropbox/Notational Data/"
+   deft-text-mode 'org-mode
+   deft-use-filename-as-title t
+   deft-auto-save-interval 240
+   )
+  (global-set-key (kbd "<C-f9>") 'deft)
 
 
-;; python setplist
 
-(when (executable-find "ipython")
-  (setq python-shell-interpreter "ipython"))
+
+
+
+
+  ;; python setplist
+
+  (when (executable-find "ipython")
+    (setq python-shell-interpreter "ipython")))

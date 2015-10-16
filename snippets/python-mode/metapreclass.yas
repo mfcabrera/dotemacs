@@ -1,0 +1,37 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: metaprecl
+# key: metaprecl
+# binding: direct-keybinding
+# --
+class ${1:className}(luigi.hadoop.JobTask):
+	"""$1: $0"""
+
+	output_file = "$1.tsv"
+
+	hdfs_dir = luigi.Parameter(
+		config_path={"section": "core", "name": "hdfs-dir"}
+	)
+	env = luigi.Parameter(
+		config_path={"section": "task_params", "name": "environment"}
+	)
+
+	def requires(self):
+		""""""
+		pass
+
+	def init_local(self):
+		""""""
+		pass
+
+	def output(self):
+		return luigi.hdfs.HdfsTarget(
+			"{}/{}".format(self.hdfs_dir, self.output_file)
+		)
+
+	def mapper(self, line):
+		""""""
+		pass
+
+	def reducer(self):
+		""""""
+		pass

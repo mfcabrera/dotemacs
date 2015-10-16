@@ -44,10 +44,17 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 (setq org-agenda-files
       (append (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org.txt")
-              (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org")))
+              (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org")
+              (sa-find-org-file-recursively "~/.org-jira/" "org")
+              ))
+
+(setq WORK-FILES  (append   '("~/Dropbox/Notational Data/work.org.txt") (sa-find-org-file-recursively "~/.org-jira/" "org")  )  )
+
 
 (define-key global-map "\C-cr" 'org-capture)
 
+(add-to-list 'org-modules 'org-habit)
+(add-to-list 'org-modules 'org-checklist)
 
 ;; Colors and Faces
 ;; Many of this configuration is pretty old and not used
@@ -71,8 +78,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 ;; Org Mode Behaviour
 ;; Avoid tags inheritance for specific tags
-(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META"))
-
+(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META", "crypt"))
 
 ;; notes for remember
 (setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
@@ -149,17 +155,20 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 
 ;; REMEMBER TEMPLATES
-(setq org-remember-templates
+(setq org--templates
       (
-       quote (
-              ("todo" ?t "* TODO %? \n%U " nil bottom nil)
-              ("note" ?n "* %?  :NOTE:  \n%U " nil "NOTES" nil)
-              ("idea" ?i "* %?  \n%U  " nil "IDEAS" nil)
-              ("soporte" ?s "* SOPORTE %? :SUPPORT:  %u\n:CLOCK-IN:   " nil "SOPORTE" nil)
-              ("gasto" ?g "* %U  %?  " "home.org" "GASTOS Y MOVIMIENTOS" nil)
+        quote (
+              ("t" "todo" "* TODO %? \n%U " nil bottom nil)
+              ("n" "note" "* %?  :NOTE:  \n%U " nil "NOTES" nil)
+              ("i" "idea" "* %?  \n%U  " nil "IDEAS" nil)
               )
              )
       )
+
+
+
+
+
 
 ;; REFILE SETUP
 ; Targets include this file and any file contributing to the agenda - up to 5 levels deep
@@ -186,24 +195,22 @@ If FILEXT is provided, return files with extension FILEXT instead."
            )
          )
 
-       ("Q" "Work Planned Project List"
-         ( (tags "PROJECT+CURRENT+PLANNED+@work")
+       ("Q" "Work current Project List"
+         ( (tags "PROJECT+current+@work")
            )
          )
 
         ("X" "Not scheduled"
          ( (todo "TODO"
                  (
-                  (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline 'timestamp 'regexp "desparche"
-
-
-                                                                       ))
+                  (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'deadline 'timestamp 'regexp ":desparche:"
+                                                                      ))
                   )
                  )
            )
          )
 
-        ("S" "Server List"
+        ("K" "Server List"
          ( (tags "SERVER")
            )
          )
@@ -217,9 +224,10 @@ If FILEXT is provided, return files with extension FILEXT instead."
         ("w" "Things to do at Work"
          (
 
-          (tags-todo "REFILE")
+          (tags-todo "@work|{WIDGET}*")
           (agenda "" ((org-agenda-ndays 1)
-                      (org-agenda-filter-preset  '("+@work" ))
+;                      (org-agenda-tag-filter-preset  '("+@work" ))
+                      (org-agenda-files WORK-FILES)
                       (org-agenda-sorting-strategy
                        (quote ((agenda time-up priority-down tag-up) )))
                       (org-deadline-warning-days 0)
@@ -278,13 +286,13 @@ If FILEXT is provided, return files with extension FILEXT instead."
         ;; limits agenda view to timestamped items
         ;; ...other commands here
 
-        ("Y" "Home Planned Project List"
-         ( (tags "PROJECT+@home+CURRENT")
+        ("Y" "Personal Project List"
+         ( (tags "PROJECT-@work+current")
            )
          )
 
 
-        ("W" "Weekly Plan"
+        ("L" "Weekly Plan"
          ( (agenda)
            (todo "TODO")
            (tags "PROJECT")
@@ -333,7 +341,11 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 
 
-))
+      ))
+
+
+
+
 
 
 (org-babel-do-load-languages
@@ -342,7 +354,9 @@ If FILEXT is provided, return files with extension FILEXT instead."
    (emacs-lisp . t)
    (python . t)
    (sh . t)
+   (gnuplot . t)
    ))
+
 
 
 ;; Set to the location of your Org files on your local system
@@ -445,3 +459,18 @@ containing the properties `:guid' and `:item-full-text'."
        "~/Dropbox/Notational Data/tech-feed.org.txt" "News YC")
 
       ))
+
+;(defun org-summary-todo (n-done n-not-done)
+;  \"Switch entry to DONE when all subentries are done, to TODO otherwise.\"
+;  (let (org-log-done org-log-states)   ; turn off logging
+;    (org-todo (if (= n-not-done 0) \"DONE\" \"TODO\"))))
+
+;(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+
+(require 'org-jira)
+(setq jiralib-url "https://jira.trustyou.com")
+                                        ; you need make sure the jiralib-url is correct. Login your jira
+                                        ; server in browser, the home page URL should be like:
+                                        ; https://issues.apache.org/jira/secure/Dashboard.jspa
+                                        ; remove the "/secure/Dashboard.jspa" part and you get the jiralib-url:
+                                        ; "https://issues.apache.org/jira"

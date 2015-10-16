@@ -1,0 +1,30 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: luigiclass
+# key: luigiclass
+# binding: direct-keybinding
+# --
+class ${1:className}(luigi.hadoop.JobTask):
+	"""$1: $0"""
+
+	output_file = "$1"
+
+	def requires(self):
+		""""""
+		pass
+
+	def init_local(self):
+		""""""
+		pass
+
+	def output(self):
+		return luigi.hdfs.HdfsTarget(
+			"{}".format(self.output_file)
+		)
+
+	def mapper(self, line):
+		""""""
+		pass
+
+	def reducer(self):
+		""""""
+		pass
