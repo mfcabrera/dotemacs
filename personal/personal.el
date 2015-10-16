@@ -179,3 +179,9 @@
 
 
 (add-hook 'term-mode-hook (lambda () (yas-minor-mode -1)))
+(require 'package)
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+
+
+(defvar org-reveal-root "file:////Users/miguel/development/reveal.js")
+(setq  whitespace-line-column  100)
