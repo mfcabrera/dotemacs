@@ -78,7 +78,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 ;; Org Mode Behaviour
 ;; Avoid tags inheritance for specific tags
-(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META", "crypt"))
+(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META", "crypt" "desparche"))
 
 ;; notes for remember
 (setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))

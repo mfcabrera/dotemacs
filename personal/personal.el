@@ -29,17 +29,7 @@
       `((".*" ,user-temporary-file-directory t)))
 (setq auto-save-default nil)
 
-; make completion buffers disappear after 30 seconds.
-(add-hook 'completion-setup-hook
-  (lambda () (run-at-time 30 nil
-    (lambda () (delete-windows-on "*Completions*")))))
 
-(defun my-flymake-show-help ()
-  (when (get-char-property (point) 'flymake-overlay)
-   (let ((help (get-char-property (point) 'help-echo)))
-    (if help (message "%s" help)))))
-
-(add-hook 'post-command-hook 'my-flymake-show-help)
 
 
 (defun sync-classy ()
@@ -95,17 +85,7 @@
 (global-set-key (kbd "C-c C-y ") 'sync-sentency)
 
 
-;; Don't use tabs ANY MORE!
-(set-variable 'py-indent-tabs-mode t)
 
-(add-hook 'python-mode-hook
-      (lambda ()
-        (setq indent-tabs-mode t)
-        (setq tab-width 4)
-        (setq python-indent 4)))
-
-;; (add-hook 'python-mode-hook
-;;  (lambda () (setq indent-tabs-mode t)))
 
 
 (defun my-insert-quote ()
@@ -178,10 +158,11 @@
 ;; (global-set-key (kbd "C-x p i") 'cliplink)
 
 
-(add-hook 'term-mode-hook (lambda () (yas-minor-mode -1)))
+
 (require 'package)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-
+(add-to-list 'package-archives
+             '("elpy" . "http://jorgenschaefer.github.io/packages/"))
 
 (defvar org-reveal-root "file:////Users/miguel/development/reveal.js")
 (setq  whitespace-line-column  100)
