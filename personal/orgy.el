@@ -51,7 +51,19 @@ If FILEXT is provided, return files with extension FILEXT instead."
 (setq WORK-FILES  (append   '("~/Dropbox/Notational Data/work.org.txt") (sa-find-org-file-recursively "~/.org-jira/" "org")  )  )
 
 
-(define-key global-map "\C-cr" 'org-capture)
+(define-key global-map "\C-cc" 'org-capture)
+
+(setq org-capture-templates
+      '(("l" "Link" entry
+         (file+headline org-default-notes-file "Articles to Read/Watch")
+         "* %a\n %?\n %i" :immediate-finish 1)
+        ("t" "Todo" entry (file+headline  org-default-notes-file "TASKS")
+         "* TODO %?\n SCHEDULED:%t\n  %i\n %a")
+        ("T" "Todo (with link)" entry (file+headline  org-default-notes-file "TASKS")
+         "* TODO %?\n SCHEDULED:%t\n  %a\n %i\n")
+        )
+      )
+
 
 (add-to-list 'org-modules 'org-habit)
 (add-to-list 'org-modules 'org-checklist)

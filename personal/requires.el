@@ -27,10 +27,4 @@ nil
 
 ;; Helm mode configuration
 (helm-mode 1)
-(setq helm-buffers-fuzzy-matching t)
-(setq helm-find-files t)
-(setq helm-imenu t)
-(setq helm-recentf-fuzzy-match t)
-(setq helm-M-x-fuzzy-match t)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(require 'prelude-helm-everywhere)
