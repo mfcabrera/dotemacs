@@ -6,10 +6,7 @@
 (require 'markdown-mode)
 ;;(require 'haml-mode)
 
-(require 'yasnippet) ;; not yasnippet-bundl
-;;(yas/load-directory "~/development/dotemacs/snippets/python-mode")
-nil
-;;(yas/load-directory "~/development/dotemacs/snippets/org-mode")
+(require 'yasnippet)
 
 (setq yas-snippet-dirs (append yas-snippet-dirs
 			       '("~/development/dotemacs/snippets/")))
@@ -28,3 +25,11 @@ nil
 ;; Helm mode configuration
 (helm-mode 1)
 (require 'prelude-helm-everywhere)
+;; So that Org-Refile works properly
+(setq org-completion-use-ido nil)
+(setq org-outline-path-complete-in-steps nil)
+
+;; OB-IPYTHON things
+;(require 'ob-ipython)
+(setq org-confirm-babel-evaluate nil)   ;don't prompt me to confirm everytime I want to evaluate a block
+;;; display/update images in the buffer after I evaluate

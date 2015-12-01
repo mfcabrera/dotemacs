@@ -68,21 +68,21 @@
   (shell-command "cd ~/development ; rsync  -az --compress-level=9 --progress ty-semantic-api  vmx: & " ))
 
 
-(global-set-key (kbd "C-c C-, ") 'sync-meta)
+;;(global-set-key (kbd "C-c C-, ") 'sync-meta)
 ;(global-set-key (kbd "C-c C-, ") 'sync-classy)
 
 (defun ty-hadoop ()
   (interactive)
   (browse-url "https://vm1.trustyou.com:5030"))
 
-(global-set-key (kbd "C-c C-t h") 'ty-hadoop)
+;(global-set-key (kbd "C-c C-t h") 'ty-hadoop)
 
 
 (defun sync-sentency ()
   (interactive)
   (shrink-window-if-larger-than-buffer)
   (shell-command "cd ~/development ; rsync --exclude='lib/stanford-ner' --exclude=files  -az --progress sentency  vmx:sentency & " ))
-(global-set-key (kbd "C-c C-y ") 'sync-sentency)
+;;(global-set-key (kbd "C-c C-y ") 'sync-sentency)
 
 
 
@@ -136,3 +136,29 @@
 (setq  whitespace-line-column  100)
 
 (setq prelude-guru nil)
+
+;; Auto package installation
+(prelude-require-packages '(ox-reveal org-jira org-gcal magit gnuplot elpy json-mode org-mac-link pig-mode))
+
+
+
+;; Doopla
+(defun doopla ()
+  (interactive)
+  (with-output-to-temp-buffer "*doopla*"
+    (shell-command "doopla 2>/dev/null  &" "*doopla*" "*Messages*")
+    (pop-to-buffer "*doopla*")))
+
+
+(require 'ansi-color)
+
+(defadvice display-message-or-buffer (before ansi-color activate)
+  "Process ANSI color codes in shell output."
+  (let ((buf (ad-get-arg 0)))
+    (and (bufferp buf)
+         (string= (buffer-name buf) "*doopla*")
+         (with-current-buffer buf
+           (ansi-color-apply-on-region (point-min) (point-max))))))
+
+
+(setq tab-width 4)

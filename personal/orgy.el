@@ -55,12 +55,20 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 (setq org-capture-templates
       '(("l" "Link" entry
-         (file+headline org-default-notes-file "Articles to Read/Watch")
+         (file+headline org-default-notes-file "Links")
          "* %a\n %?\n %i" :immediate-finish 1)
         ("t" "Todo" entry (file+headline  org-default-notes-file "TASKS")
-         "* TODO %?\n SCHEDULED:%t\n  %i\n %a")
+         "* TODO %?\n SCHEDULED:%t\n  %i\n")
         ("T" "Todo (with link)" entry (file+headline  org-default-notes-file "TASKS")
          "* TODO %?\n SCHEDULED:%t\n  %a\n %i\n")
+        ("m" "Task from Email" entry
+         (file+headline org-default-notes-file "Emails")
+         "* TODO %^{Task} :email:
+         Mailmate link:
+         [[message://%l][Open Email]]
+         %?  ")
+        ("b" "Idea forBlog" entry (file+headline "~/Dropbox/Notational Data/blog-ideas.org.txt" "Ideas")
+         "* %?\n %i")
         )
       )
 
@@ -90,7 +98,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 ;; Org Mode Behaviour
 ;; Avoid tags inheritance for specific tags
-(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META", "crypt" "desparche"))
+(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META", "crypt" "desparche" "writing" "reading"))
 
 ;; notes for remember
 (setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
@@ -235,34 +243,35 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
         ("w" "Things to do at Work"
          (
-
-          (tags-todo "@work|{WIDGET}*")
-          (agenda "" ((org-agenda-ndays 1)
-;                      (org-agenda-tag-filter-preset  '("+@work" ))
+          (tags  "PROJECT+current+@work")
+          (tags-todo  "+@work+type=\"Bug\""  )
+          (agenda "Work" ((org-agenda-ndays 1)
+                     ;;(org-agenda-tag-filter-preset  '("+@work" ))
                       (org-agenda-files WORK-FILES)
                       (org-agenda-sorting-strategy
                        (quote ((agenda time-up priority-down tag-up) )))
                       (org-deadline-warning-days 0)
                       ))
+          (tags-todo "JIRA")
           )
 
          )
 
         ("h" "thing TODO at Home"
-         (
-          (tags "READING")
-          (tags-todo "REFILE")
-          (agenda "" ((org-agenda-ndays 1)
-                      (org-agenda-filter-preset  '("+@home" ))
-                      (org-agenda-sorting-strategy
-                       (quote ((agenda time-up priority-down tag-up) )))
-                      (org-deadline-warning-days 0)
-                      ))
-
+          ((tags-todo "+dailies+SCHEDULED<=\"<today>\"")
+           (tags "reading")
+           (tags "writing")
+           (agenda "" ((org-agenda-ndays 1)
+                       (org-agenda-sorting-strategy
+                        (quote ((agenda time-up priority-down tag-up))))
+                       (org-deadline-warning-days 0)))
+           (tags-todo "REFILE"))
+          ((org-agenda-tag-filter-preset '("-@work")) )
           )
+        ("R" "Currently Learning/Studying"
+         ((tags "@learning+PROJECT+current-@work"))
 
          )
-
 
         ("W" "Weekly Review"
          ((agenda "" ((org-agenda-ndays 7))) ;; review upcoming deadlines and appointments
@@ -275,6 +284,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
          ("D" "Daily Action List"
           (
            (tags-todo "email")
+           (tags-todo "+dailies+SCHEDULED<=\"<today>\"")
            (agenda "" ((org-agenda-ndays 1)
                        (org-agenda-sorting-strategy
                         (quote ((agenda time-up priority-down tag-up) )))
@@ -314,6 +324,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
         )
 
       )
+
 
 ;;TODO Create variables based on the enviroment (Windows, Linux...etc)
 ;; IMPORANT this is for generating the blog
@@ -486,3 +497,5 @@ containing the properties `:guid' and `:item-full-text'."
                                         ; https://issues.apache.org/jira/secure/Dashboard.jspa
                                         ; remove the "/secure/Dashboard.jspa" part and you get the jiralib-url:
                                         ; "https://issues.apache.org/jira"
+
+;;(setq org-src-fontify-natively t)

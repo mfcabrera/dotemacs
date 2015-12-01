@@ -30,3 +30,4 @@
     (let ((help (get-char-property (point) 'help-echo)))
       (if help (message "%s" help)))))
 (add-hook 'post-command-hook 'my-flymake-show-help)
+(add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)

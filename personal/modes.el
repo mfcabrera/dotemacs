@@ -19,5 +19,3 @@
 (add-to-list 'auto-mode-alist '("\\.treetop$" . treetop-mode))
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.rpy$" . python-mode))
-
- 

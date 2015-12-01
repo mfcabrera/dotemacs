@@ -62,3 +62,9 @@
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key (kbd "<f12>") 'org-agenda)
 (global-set-key "\C-ct" 'mike/move-to-today)
+
+
+;; Helm Mode - I want to complete wit Tab and stuff
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+(define-key helm-map (kbd "C-j")  'helm-select-action) ; list actions using C-z
