@@ -10,15 +10,15 @@ tmpfile.puts ("Starting")
 
 # First line is used as the name of the task
 messageURI=URI::escape(ENV['MM_MESSAGE_ID'])
+messageURI="message%3A%2F%2F" + messageURI
 tmpfile.puts(messageURI)
 tmpfile.puts(ENV['MM_FROM'])
 tmpfile.puts(ENV['MM_SUBJECT'])
 subjectLine=ENV['MM_SUBJECT']
 tmpfile.puts(subjectLine)
-messageURI="message://"+messageURI
 
-commandLine="/usr/local/bin/emacsclient -n org-protocol://capture://m/" + messageURI+ "/\"" + subjectLine + "\"/"
-commandLine= commandLine + " & osascript -e 'tell application \"Emacs\"' -e 'activate' -e 'end tell'"
+commandLine="/usr/local/bin/emacsclient -n org-protocol:/capture:/m/" + messageURI+ "/\"" + subjectLine + "\"/"
+#commandLine= commandLine + " & osascript -e 'tell application \"Emacs\"' -e 'activate' -e 'end tell'"
 tmpfile.puts(commandLine)
 tmpfile.puts ("ending\n")
 tmpfile.close

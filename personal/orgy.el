@@ -3,6 +3,8 @@
 ;;helper function for DRYing the creation of paths for org-mode files acrross systems
 ;;Need to have previously defined the variables *ORG-FILES-PATH* (i.e. in .emacs)
 
+;; Log into a drawer instead of flodding
+(setq org-log-into-drawer t)
 
 (defun mike/refile-to (file headline)
     "Move current headline to specified location"
@@ -10,6 +12,7 @@
                  (find-file file)
                  (org-find-exact-headline-in-buffer headline))))
       (org-refile nil nil (list headline file nil pos))))
+
 
 (defun mike/move-to-today ()
     "Move current headline to today"
@@ -52,6 +55,11 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 
 (define-key global-map "\C-cc" 'org-capture)
+;; notes for capture
+
+(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
+(setq org-default-work-file  (concat "~/Dropbox/Notational Data/" "work.org.txt" ))
+
 
 (setq org-capture-templates
       '(("l" "Link" entry
@@ -59,14 +67,15 @@ If FILEXT is provided, return files with extension FILEXT instead."
          "* %a\n %?\n %i" :immediate-finish 1)
         ("t" "Todo" entry (file+headline  org-default-notes-file "TASKS")
          "* TODO %?\n SCHEDULED:%t\n  %i\n")
+        ("w" "Todo - Work" entry (file+headline  org-default-work-file "Misc Tasks")
+         "* TODO %?\n SCHEDULED:%t\n  %i\n")
         ("T" "Todo (with link)" entry (file+headline  org-default-notes-file "TASKS")
          "* TODO %?\n SCHEDULED:%t\n  %a\n %i\n")
         ("m" "Task from Email" entry
          (file+headline org-default-notes-file "Emails")
-         "* TODO %^{Task} :email:
-         Mailmate link:
-         [[message://%l][Open Email]]
-         %?  ")
+         "* TODO  %a  :email: \n
+           %l
+         " :immediate-finish 1)
         ("b" "Idea forBlog" entry (file+headline "~/Dropbox/Notational Data/blog-ideas.org.txt" "Ideas")
          "* %?\n %i")
         )
@@ -100,8 +109,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
 ;; Avoid tags inheritance for specific tags
 (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META", "crypt" "desparche" "writing" "reading"))
 
-;; notes for remember
-(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
 
 
 
@@ -174,22 +181,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
       (org-clock-in))))
 
 
-;; REMEMBER TEMPLATES
-(setq org--templates
-      (
-        quote (
-              ("t" "todo" "* TODO %? \n%U " nil bottom nil)
-              ("n" "note" "* %?  :NOTE:  \n%U " nil "NOTES" nil)
-              ("i" "idea" "* %?  \n%U  " nil "IDEAS" nil)
-              )
-             )
-      )
-
-
-
-
-
-
 ;; REFILE SETUP
 ; Targets include this file and any file contributing to the agenda - up to 5 levels deep
 (setq org-refile-targets (quote ((org-agenda-files :maxlevel . 5) (nil :maxlevel . 5))))
@@ -260,6 +251,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
         ("h" "thing TODO at Home"
           ((tags-todo "+dailies+SCHEDULED<=\"<today>\"")
            (tags "reading")
+           (tags "+learning+current-@work+SCHEDULED<=\"<today>\"")
            (tags "writing")
            (agenda "" ((org-agenda-ndays 1)
                        (org-agenda-sorting-strategy
@@ -378,6 +370,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
    (python . t)
    (sh . t)
    (gnuplot . t)
+   (dot . t)
    ))
 
 
