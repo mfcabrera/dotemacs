@@ -1,6 +1,10 @@
 ; local installation of org-mode
 (require 'org-install)
 (require 'org)
+(require 'org-capture)
+(require 'org-protocol)
+
+
 
 
 (require 'markdown-mode)

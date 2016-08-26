@@ -68,3 +68,16 @@
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
 (define-key helm-map (kbd "C-j")  'helm-select-action) ; list actions using C-z
+
+
+;; neotree
+(global-set-key [f8] 'neotree-toggle)
+
+;; Projectile cool stuff
+(define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
+(define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
+(define-key projectile-mode-map [?\s-f] 'projectile-find-file)
+(define-key projectile-mode-map [?\s-g] 'projectile-grep)
+
+
+(define-key projectile-mode-map [?\H-g] 'magit-status)

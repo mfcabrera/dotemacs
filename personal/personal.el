@@ -162,3 +162,12 @@
 
 
 (setq tab-width 4)
+
+(setq neo-smart-open t)
+
+
+
+;Non-nil means `display-buffer' should reuse frames. If the buffer
+;in question is already displayed in a frame, ; raise that frame.
+
+(setq-default display-buffer-reuse-frames t)

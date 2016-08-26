@@ -31,3 +31,6 @@
       (if help (message "%s" help)))))
 (add-hook 'post-command-hook 'my-flymake-show-help)
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+
+
+(setq projectile-switch-project-action 'neotree-projectile-action)

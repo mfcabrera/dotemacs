@@ -74,6 +74,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
         ("m" "Task from Email" entry
          (file+headline org-default-notes-file "Emails")
          "* TODO  %a  :email: \n
+           SCHEDULED:%t\n
            %l
          " :immediate-finish 1)
         ("b" "Idea forBlog" entry (file+headline "~/Dropbox/Notational Data/blog-ideas.org.txt" "Ideas")
@@ -235,6 +236,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
         ("w" "Things to do at Work"
          (
           (tags  "PROJECT+current+@work")
+          (tags  "reading+@work")
           (tags-todo  "+@work+type=\"Bug\""  )
           (agenda "Work" ((org-agenda-ndays 1)
                      ;;(org-agenda-tag-filter-preset  '("+@work" ))
@@ -244,6 +246,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
                       (org-deadline-warning-days 0)
                       ))
           (tags-todo "JIRA")
+          (tags-todo "email")
           )
 
          )
@@ -257,7 +260,10 @@ If FILEXT is provided, return files with extension FILEXT instead."
                        (org-agenda-sorting-strategy
                         (quote ((agenda time-up priority-down tag-up))))
                        (org-deadline-warning-days 0)))
-           (tags-todo "REFILE"))
+           (tags-todo "REFILE")
+           (tags "PROJECT-@work+current")
+           )
+
           ((org-agenda-tag-filter-preset '("-@work")) )
           )
         ("R" "Currently Learning/Studying"
@@ -330,7 +336,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
         ("mf" :components ("mf-org"
                                  "mf-img"))
        ("mf-org"
-               :base-directory "/Users/miguel/Dropbox/Notational Data"
+               :base-directory "/Users/miguel/Dropbox/Notational Data/blog-entries/"
                :recursive t
                :base-extension "blog.org.txt"
                :publishing-directory "/Users/miguel/Dropbox/blog-stuff/mfcabrera.com/_posts"
