@@ -108,15 +108,12 @@
    deft-use-filename-as-title t
    deft-auto-save-interval 240
    )
-  (global-set-key (kbd "<C-f9>") 'deft)
-
-
-
-
-
+  (global-set-key (kbd "<C-f9>") 'deft))
 
 
   ;; python setplist
 
   (when (executable-find "ipython")
-    (setq python-shell-interpreter "ipython")))
+    (setq python-shell-interpreter "ipython"
+          python-shell-interpreter-args "--simple-prompt -i")
+    )

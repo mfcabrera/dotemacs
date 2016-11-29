@@ -1,0 +1,7 @@
+{
+	name          = 'Add to Work...';
+	environment   = 'MM_SUBJECT=${subject.prefix:+${subject.prefix} }${subject.blob:+[${subject.blob}] }${subject.body}\nMM_MESSAGE_ID=${message-id.split}\n';
+	command       = '#!/bin/bash\n"${MM_BUNDLE_SUPPORT}/bin/add_work"';
+	keyEquivalent = "^o";
+	uuid          = '99906BD9-9CF6-4DFC-95B8-DE96DFB211E7';
+}

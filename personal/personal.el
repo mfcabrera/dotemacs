@@ -163,11 +163,16 @@
 
 (setq tab-width 4)
 
-(setq neo-smart-open t)
+(setq neo-smart-open nil)
 
+(setq langtool-language-tool-jar "/Users/miguel/bin/LanguageTool-3.5/languagetool-commandline.jar")
 
 
 ;Non-nil means `display-buffer' should reuse frames. If the buffer
 ;in question is already displayed in a frame, ; raise that frame.
 
 (setq-default display-buffer-reuse-frames t)
+
+
+(require 'editorconfig)
+(editorconfig-mode 1)

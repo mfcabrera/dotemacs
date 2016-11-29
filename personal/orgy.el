@@ -75,7 +75,13 @@ If FILEXT is provided, return files with extension FILEXT instead."
          (file+headline org-default-notes-file "Emails")
          "* TODO  %a  :email: \n
            SCHEDULED:%t\n
-           %l
+           [[message://%l][Email]]
+         " :immediate-finish 1)
+        ("x" "Work task from Email" entry
+         (file+headline org-default-work-file "Emails")
+         "* TODO  %a  :email: \n
+           SCHEDULED:%t\n
+           [[message://%l][Email]]
          " :immediate-finish 1)
         ("b" "Idea forBlog" entry (file+headline "~/Dropbox/Notational Data/blog-ideas.org.txt" "Ideas")
          "* %?\n %i")
@@ -246,15 +252,17 @@ If FILEXT is provided, return files with extension FILEXT instead."
                       (org-deadline-warning-days 0)
                       ))
           (tags-todo "JIRA")
-          (tags-todo "email")
+          (tags-todo "email+@work")
           )
 
          )
 
         ("h" "thing TODO at Home"
-          ((tags-todo "+dailies+SCHEDULED<=\"<today>\"")
-           (tags "reading")
-           (tags "+learning+current-@work+SCHEDULED<=\"<today>\"")
+         ((tags-todo "+dailies+SCHEDULED<=\"<today>\"")
+          (tags-todo "NEXT")
+
+          (tags "+learning+current-@work+SCHEDULED<=\"<today>\"")
+          (tags "reading")
            (tags "writing")
            (agenda "" ((org-agenda-ndays 1)
                        (org-agenda-sorting-strategy

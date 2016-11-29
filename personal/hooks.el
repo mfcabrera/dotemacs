@@ -5,9 +5,9 @@
 
 (add-hook 'python-mode-hook
           (lambda ()
-            (setq indent-tabs-mode t)
+            (setq indent-tabs-mode nil)
             (setq tab-width 4)
-            (setq python-indent 4)))
+            (setq python-indent-offset 4)))
 
 ;; Setup sphinx-doc-mode (automatically generate docstrings)
 (add-hook 'python-mode-hook (lambda ()
@@ -33,4 +33,4 @@
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
 
-(setq projectile-switch-project-action 'neotree-projectile-action)
+;;(setq projectile-switch-project-action 'neotree-projectile-action)
