@@ -71,7 +71,7 @@
 
 
 ;; neotree
-(global-set-key [f8] 'neotree-toggle)
+;;(global-set-key [f8] 'neotree-toggle)
 
 ;; Projectile cool stuff
 (define-key projectile-mode-map [?\s-d] 'projectile-find-dir)

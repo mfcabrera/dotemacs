@@ -68,7 +68,7 @@
 (server-start)
 
 ;; use a nice font by default
-(set-default-font "-apple-Monaco-medium-normal-normal-*-14-*-*-*-m-0-fontset-auto1")
+;;(set-default-font "-apple-Monaco-medium-normal-normal-*-14-*-*-*-m-0-fontset-auto1")
 ;;(set-default-font "-apple-inconsolata-medium-r-normal--0-0-0-0-m-0-iso10646-1")
 ;;(set-default-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-15-*-*-*-m-0-iso10646-1")
 ;;(set-face-attribute 'default (selected-frame) :height 180)

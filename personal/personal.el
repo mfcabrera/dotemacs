@@ -176,3 +176,80 @@
 
 (require 'editorconfig)
 (editorconfig-mode 1)
+
+(use-package highlight-symbol
+             :diminish highlight-symbol-mode
+             :commands highlight-symbol
+             :bind ("s-h" . highlight-symbol))
+
+(defun insert-branch-name ()
+  "Insert <p></p> at cursor point."
+  (interactive)
+  (insert (shell-command-to-string "git branch"))
+  (backward-char 4)
+  )
+
+(use-package popup-imenu
+  :commands popup-imenu
+  :bind ("M-i" . popup-imenu))
+
+(use-package org-trello
+  :init
+  (custom-set-variables '(org-trello-files '(
+                                             "/Users/miguel/Dropbox/Notational Data/TODO-Casa-Berling.org.txt"))
+                        '(org-trello-current-prefix-keybinding "C-c x")
+                        )
+  )
+
+(set-default-font
+ "-*-Consolas-normal-normal-normal-*-17-*-*-*-m-0-iso10646-1"
+ )
+
+
+(set-variable 'flycheck-python-mypy-executable "/Users/miguel/anaconda3/bin/mypy")
+(set-variable 'flycheck-python-mypy-args '("--py2"  "--ignore-missing-imports" "--check-untyped-defs"))
+
+(flycheck-add-next-checker 'python-flake8 'python-mypy)
+
+
+(require 'py-isort)
+;;(add-hook 'before-save-hook 'py-isort-before-save)
+
+
+
+;;;; Fonts with ligatures support
+;;;; Install from: https://github.com/tonsky/FiraCode
+;; (set-language-environment "UTF-8")
+;; (set-default-coding-systems 'utf-8)
+
+;; (when (window-system)
+;;   (set-default-font "Fira Code"))
+;; (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
+;;                (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
+;;                (36 . ".\\(?:>\\)")
+;;                (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
+;;                (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
+;;                (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
+;;                (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
+;;                (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+;;               (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
+;;                (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
+;;                (48 . ".\\(?:x[a-zA-Z]\\)")
+;;                (58 . ".\\(?:::\\|[:=]\\)")
+;;                (59 . ".\\(?:;;\\|;\\)")
+;;                (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
+;;                (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
+;;                (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
+;;                (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
+;;                (91 . ".\\(?:]\\)")
+;;                (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
+;;                (94 . ".\\(?:=\\)")
+;;                (119 . ".\\(?:ww\\)")
+;;                (123 . ".\\(?:-\\)")
+;;                (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
+;;                (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
+;;                )
+;;              ))
+;;   (dolist (char-regexp alist)
+;;     (set-char-table-range composition-function-table (car char-regexp)
+;;                           `([,(cdr char-regexp) 0 font-shape-gstring]))))

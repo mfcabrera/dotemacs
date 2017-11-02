@@ -34,3 +34,16 @@
 
 
 ;;(setq projectile-switch-project-action 'neotree-projectile-action)
+
+(defun inferior-js-mode-hook-setup ()
+  (add-hook 'comint-output-filter-functions 'js-comint-process-output))
+(add-hook 'inferior-js-mode-hook 'inferior-js-mode-hook-setup t)
+
+
+(add-hook 'js2-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-x C-e") 'js-send-last-sexp)
+            (local-set-key (kbd "C-M-x") 'js-send-last-sexp-and-go)
+            (local-set-key (kbd "C-c b") 'js-send-buffer)
+            (local-set-key (kbd "C-c C-b") 'js-send-buffer-and-go)
+            (local-set-key (kbd "C-c l") 'js-load-file-and-go)))

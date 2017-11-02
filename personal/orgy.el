@@ -101,20 +101,26 @@ If FILEXT is provided, return files with extension FILEXT instead."
       '(
         ("WAITING"  . (:foreground "white" :weight bold))
         ("STARTED"  . (:foreground "orange" :weight bold))
-        ("DELEGATED"  . (:foreground "orange" :weight bold))
+        ("IN-PROGRESS"  . (:foreground "orange" :weight bold))
+        ("NEXT-WEEK"  . (:foreground "white" :weight bold))
+        ("THIS-WEEK"  . (:foreground "yellow" :weight bold))
+        ("PARTIAL"  . (:foreground "orange" :weight bold))
         ("NEXT"  .  org-warning)
         ("DONE"  .  (:foreground "lightgreen" :weight bold))
+        ("COMPLETED"  .  (:foreground "lightgreen" :weight bold))
         ("CANCELED"  . (:foreground "red" :weight bold))
+        ("FAILED"  . (:foreground "red" :weight bold))
         ))
 
-
+(setq org-todo-keywords
+      '((sequence "TODO" "IN-PROGRESS" "|"  "DONE" )))
 ;; Highlights the current line in agenda buffers
 (add-hook 'org-agenda-mode-hook '(lambda () (hl-line-mode 1)))
 
 
 ;; Org Mode Behaviour
 ;; Avoid tags inheritance for specific tags
-(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META", "crypt" "desparche" "writing" "reading"))
+(setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META" "NEXT" "crypt" "desparche" "writing" "reading"))
 
 
 
@@ -244,8 +250,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
           (tags  "PROJECT+current+@work")
           (tags  "reading+@work")
           (tags-todo  "+@work+type=\"Bug\""  )
-          (agenda "Work" ((org-agenda-ndays 1)
-                     ;;(org-agenda-tag-filter-preset  '("+@work" ))
+          (agenda "Work" ((org-agenda-span 'day)
+
                       (org-agenda-files WORK-FILES)
                       (org-agenda-sorting-strategy
                        (quote ((agenda time-up priority-down tag-up) )))
@@ -259,12 +265,12 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
         ("h" "thing TODO at Home"
          ((tags-todo "+dailies+SCHEDULED<=\"<today>\"")
-          (tags-todo "NEXT")
-
-          (tags "+learning+current-@work+SCHEDULED<=\"<today>\"")
+          (tags "KANBAN+TODO=\"IN-PROGRESS\"")
+          (tags "KANBAN+TODO=\"THIS-WEEK\"")
+          (tags "+learning+current-@work+TODO=\"IN-PROGRESS\"")
           (tags "reading")
-           (tags "writing")
-           (agenda "" ((org-agenda-ndays 1)
+          (tags "writing")
+           (agenda "" ((org-agenda-span 'day)
                        (org-agenda-sorting-strategy
                         (quote ((agenda time-up priority-down tag-up))))
                        (org-deadline-warning-days 0)))
