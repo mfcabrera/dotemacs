@@ -48,10 +48,9 @@ If FILEXT is provided, return files with extension FILEXT instead."
 (setq org-agenda-files
       (append (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org.txt")
               (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org")
-              (sa-find-org-file-recursively "~/.org-jira/" "org")
               ))
 
-(setq WORK-FILES  (append   '("~/Dropbox/Notational Data/work.org.txt") (sa-find-org-file-recursively "~/.org-jira/" "org")  )  )
+(setq WORK-FILES  (append   '("~/Dropbox/Notational Data/work.org.txt")  )  )
 
 
 (define-key global-map "\C-cc" 'org-capture)
@@ -503,12 +502,5 @@ containing the properties `:guid' and `:item-full-text'."
 
 ;(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
-(require 'org-jira)
-(setq jiralib-url "https://jira.trustyou.com")
-                                        ; you need make sure the jiralib-url is correct. Login your jira
-                                        ; server in browser, the home page URL should be like:
-                                        ; https://issues.apache.org/jira/secure/Dashboard.jspa
-                                        ; remove the "/secure/Dashboard.jspa" part and you get the jiralib-url:
-                                        ; "https://issues.apache.org/jira"
 
 ;;(setq org-src-fontify-natively t)

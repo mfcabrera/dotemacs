@@ -206,8 +206,8 @@
  )
 
 
-(set-variable 'flycheck-python-mypy-executable "/Users/miguel/anaconda3/bin/mypy")
-(set-variable 'flycheck-python-mypy-args '("--py2"  "--ignore-missing-imports" "--check-untyped-defs"))
+;(set-variable 'flycheck-python-mypy-executable "/Users/mcabrera/anaconda3/bin/mypy")
+(set-variable 'flycheck-python-mypy-args '("--ignore-missing-imports" "--check-untyped-defs" "--strict-optional"))
 
 (flycheck-add-next-checker 'python-flake8 'python-mypy)
 

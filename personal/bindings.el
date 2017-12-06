@@ -24,7 +24,7 @@
 (global-set-key (kbd "M-ñ") "~")
 (global-set-key [(meta \+)] "]")
 (global-set-key (kbd "M-ç") "}")
-;;(global-set-key [(meta º)] "]")
+(global-set-key (kbd "M-º") "\\")
 (global-set-key "\M-<" "\\")
 ;;(global-set-key "\M-¡" "\\")
 (global-set-key "\M-3" "#")
@@ -51,6 +51,7 @@
 
 ;; Shift+direction
 (windmove-default-keybindings)
+
 
 ;; Spelling
 (global-set-key "\C-c\C-w" 'ispell-word)
