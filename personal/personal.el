@@ -215,6 +215,43 @@
 (require 'py-isort)
 ;;(add-hook 'before-save-hook 'py-isort-before-save)
 
+;; This functon is to being able to properly edit Sphinx docs becuse indentation rules with
+;; Python are too strict
+;; Based on the following links:
+;; https://stackoverflow.com/questions/69934/set-4-space-indent-in-emacs-in-text-mode
+;; https://emacs.stackexchange.com/questions/13249/indention-and-tabs-in-fundamental-mode
+;; https://emacs.stackexchange.com/questions/31685/how-to-fix-multiline-string-indentation-in-python-mode
+;; https://emacs.stackexchange.com/questions/26435/how-can-i-disable-indentation-rules-within-docstrings-in-python-mode/29415#29415
+
+;; Keep underscores within a word boundary
+
+
+(defun my-python-indent-line ()
+  (if (eq (car (python-indent-context)) :inside-docstring)
+      (insert-tab)
+    (python-indent-line)))
+
+(defun my-python-mode-hook ()
+  (setq indent-line-function #'my-python-indent-line)
+  (local-set-key [f8] 'company-show-doc-buffer)
+  )
+(add-hook 'python-mode-hook #'my-python-mode-hook)
+(setq-default tab-width 4)
+
+;; treat my_variable as a single word
+(add-hook 'python-mode-hook
+          (lambda () (modify-syntax-entry ?_ "w" python-mode-syntax-table)))
+
+
+(setq elpy-rpc-python-command "/Users/mcabrera/anaconda3/bin/python")
+
+;; (setq python-python-command "/Users/mcabrera/anaconda3/bin/python")
+
+(setq flycheck-python-flake8-executable "/Users/mcabrera/anaconda3/bin/flake8")
+
+(with-eval-after-load 'flycheck
+  (flycheck-pos-tip-mode))
+
 
 
 ;;;; Fonts with ligatures support

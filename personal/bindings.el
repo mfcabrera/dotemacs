@@ -7,7 +7,6 @@
 (global-set-key [f2] 'fill-paragraph)
 (global-set-key [f5] 'compile)
 (global-set-key [f6] 'kill-buffer)
-(global-set-key [f7] 'vm)
 
 
 
@@ -33,6 +32,7 @@
 (global-set-key [end] 'end-of-line )
 (global-set-key [home] 'beginning-of-line )
 (global-set-key (kbd "M-<tab>")  "\\")
+(global-set-key (kbd "M-s-\\") 'indent-region)
 
 
 ;; Use regexp search by default
@@ -62,7 +62,7 @@
 (global-set-key "\C-cb" 'org-iswitchb)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key (kbd "<f12>") 'org-agenda)
-(global-set-key "\C-ct" 'mike/move-to-today)
+;; (global-set-key "\C-ct" 'mike/move-to-today)
 
 
 ;; Helm Mode - I want to complete wit Tab and stuff

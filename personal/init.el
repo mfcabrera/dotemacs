@@ -23,10 +23,7 @@
 (global-font-lock-mode t)
 (show-paren-mode 1)
 (prefer-coding-system 'utf-8)
-;; I want to be  misterioso
-;;(load-theme "zenburn")
-;;(color-theme-zenburn)
-;; personal variables
+
 (setq case-fold-search t
       search-highlight t
       query-replace-highlight t
@@ -47,46 +44,14 @@
 (show-paren-mode t)
 (setq show-paren-style 'expression)
 
-;; we want ido
-;;(ido-mode t)
-
-;; (ido-ubiquitous t)
-;; (setq
-;;       ido-enable-prefix nil
-;;       ido-auto-merge-work-directories-length 0
-;;       ido-create-new-buffer 'always
-;;       ido-use-filename-at-point nil
-;;       ido-use-virtual-buffers t
-;;       ido-handle-duplicate-virtual-buffers 2
-;;       ido-max-prospects 20)
-;; (setq ido-everywhere t)
-
-
 ;; use y/n instead of yes/no
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (server-start)
 
-;; use a nice font by default
-;;(set-default-font "-apple-Monaco-medium-normal-normal-*-14-*-*-*-m-0-fontset-auto1")
-;;(set-default-font "-apple-inconsolata-medium-r-normal--0-0-0-0-m-0-iso10646-1")
-;;(set-default-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-15-*-*-*-m-0-iso10646-1")
-;;(set-face-attribute 'default (selected-frame) :height 180)
-
-
-
 ;; tramp setup
 (require 'tramp)
 (setq tramp-default-method "scp")
-
-;;(add-to-list 'load-path "~/.emacs.d/vendor")
-;; add all the directories in .emacs.d/vendor/ to the path
-;;(let* ((files (directory-files "~/.emacs.d/vendor" t "[^\.+]")))
- ;; (mapcar (lambda (d) (add-to-list 'load-path d)) files))
-
-;;add org-mode to the path
-;;(add-to-list 'load-path "~/.emacs.d/vendor/org-mode/lisp")
-;;(add-to-list 'load-path "~/.emacs.d/vendor/org-mode/contrib/lisp")
 
 ;; Lets start loading file by file
 (add-to-list 'load-path "~/.emacs.d/personal")
@@ -117,3 +82,6 @@
     (setq python-shell-interpreter "ipython"
           python-shell-interpreter-args "--simple-prompt -i")
     )
+
+
+(load-theme 'dracula)

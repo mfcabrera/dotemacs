@@ -14,12 +14,16 @@
       (org-refile nil nil (list headline file nil pos))))
 
 
-(defun mike/move-to-today ()
-    "Move current headline to today"
-    (interactive)
-    (org-mark-ring-push)
-    (mike/refile-to "~/Dropbox/Notational Data/TODAY.org.txt" "XXX")
-    (org-mark-ring-goto))
+ ;; (defun mike/move-to-today ()
+ ;;    "Move current headline to today"
+ ;;    (interactive)
+ ;;    (org-mark-ring-push)
+ ;;    (mike/refile-to "~/Dropbox/Notational Data/TODAY.org.txt" "XXX")
+;;    (org-mark-ring-goto))
+
+
+(setq org-stuck-projects
+      '("+PROJECT+current/-DONE" ("NEXT" "TODO") ("someday")  "SCHEDULED:\\|DEADLINE:" ))
 
 ;; recursively find .org files in provided directory
 ;; modified from an Emacs Lisp Intro example
@@ -46,18 +50,31 @@ If FILEXT is provided, return files with extension FILEXT instead."
 	  (add-to-list 'org-file-list org-file)))))))
 
 (setq org-agenda-files
-      (append (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org.txt")
-              (sa-find-org-file-recursively "~/Dropbox/Notational Data/" "org")
+      (append (sa-find-org-file-recursively "~/Dropbox/Notational Data/org/" "org")
+
+              '("~/Dropbox/Notational Data/org/Inbox.org.txt" "~/Dropbox/Notational Data/org/learning.org.txt"
+                "~/Dropbox/Notational Data/org/DayliesWeeklies.org.txt"
+                "~/Dropbox/Notational Data/org/CreativeProjects.org.txt"
+                "~/Dropbox/Notational Data/org/TalkIdeas.org.txt"
+                "~/Dropbox/Notational Data/org/TechnicalPersonalProjects.org.txt"
+                "~/Dropbox/Notational Data/org/WeightLoss.org.txt"
+                "~/Dropbox/Notational Data/org/blog-ideas.org.txt"
+                "~/Dropbox/Notational Data/org/LearningPath - DS.org.txt"
+                "~/Dropbox/Notational Data/org/MorningRoutine.org.txt"
+                "~/Dropbox/Notational Data/org/work.org.txt"
+                "~/Dropbox/Notational Data/org/ResolutionObjectives2018.org.txt"
+
+                )
               ))
 
-(setq WORK-FILES  (append   '("~/Dropbox/Notational Data/work.org.txt")  )  )
+(setq WORK-FILES  (append   '("~/Dropbox/Notational Data/org/work.org.txt")  )  )
 
 
 (define-key global-map "\C-cc" 'org-capture)
 ;; notes for capture
 
-(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
-(setq org-default-work-file  (concat "~/Dropbox/Notational Data/" "work.org.txt" ))
+(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/org/" "Inbox.org.txt" ))
+(setq org-default-work-file  (concat "~/Dropbox/Notational Data/org/" "work.org.txt" ))
 
 
 (setq org-capture-templates
@@ -132,7 +149,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 ;;(setq org-agenda-skip-scheduled-if-done t)
 (setq org-log-done t)
 (transient-mark-mode 1)
-(setq org-completion-use-ido t)
+;;(setq org-completion-use-ido t)
 
 
 ;; Clocking time related functions. more to come
@@ -180,7 +197,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 (setq org-remember-default-headline "MISC")
 
-(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/" "Inbox.org.txt" ))
+(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/org/" "Inbox.org.txt" ))
 
 ;; Start clock if a remember buffer includes :CLOCK-IN:
 (add-hook 'remember-mode-hook 'my-start-clock-if-needed 'append)
@@ -203,12 +220,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
 ; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
 (setq org-outline-path-complete-in-steps t)
 
-
-
-;;Fixme:
-(setq org-stuck-projects
-      '("+PROJECT" nil ("NEXT" "PLANNED")
-        ))
 
 (setq org-agenda-custom-commands
       '(
@@ -256,7 +267,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
                        (quote ((agenda time-up priority-down tag-up) )))
                       (org-deadline-warning-days 0)
                       ))
-          (tags-todo "JIRA")
           (tags-todo "email+@work")
           )
 
@@ -264,9 +274,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
         ("h" "thing TODO at Home"
          ((tags-todo "+dailies+SCHEDULED<=\"<today>\"")
-          (tags "KANBAN+TODO=\"IN-PROGRESS\"")
-          (tags "KANBAN+TODO=\"THIS-WEEK\"")
-          (tags "+learning+current-@work+TODO=\"IN-PROGRESS\"")
+          (tags "+learning+current-@work")
           (tags "reading")
           (tags "writing")
            (agenda "" ((org-agenda-span 'day)
@@ -288,9 +296,22 @@ If FILEXT is provided, return files with extension FILEXT instead."
          ((agenda "" ((org-agenda-ndays 7))) ;; review upcoming deadlines and appointments
           ;; type "l" in the agenda to review logged items
           (stuck "") ;; review stuck projects as designated by org-stuck-projects
+          (tags "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
+          (todo "someday") ;; review someday/maybe items
+          (todo "WAITING"))
+         ((org-agenda-tag-filter-preset '("-@work")) )
+         ) ;; review waiting items
+
+        ("F" "Weekly Review"
+         ((agenda ""  ((org-agenda-ndays 7))) ;; review upcoming deadlines and appointments
+          ;; type "l" in the agenda to review logged items
+          (stuck "") ;; review stuck projects as designated by org-stuck-projects
           (todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
-          (todo "MAYBE") ;; review someday/maybe items
-          (todo "WAITING"))) ;; review waiting items
+          (todo "someday") ;; review someday/maybe items
+          (todo "WAITING"))
+         ((org-agenda-tag-filter-preset '("+@work")) )
+         ) ;; review waiting items
+
 
          ("D" "Daily Action List"
           (
@@ -395,7 +416,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 
 ;; Set to the location of your Org files on your local system
-(setq org-directory "~/Dropbox/Notational Data")
+(setq org-directory "~/Dropbox/Notational Data/org")
 ;; Set to the name of the file where new notes will be stored
 (setq org-mobile-inbox-for-pull "~/Dropbox/Notational Data/flagged.org")
 ;; Set to <your Dropbox root directory>/MobileOrg.

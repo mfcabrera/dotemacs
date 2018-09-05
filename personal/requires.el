@@ -13,7 +13,7 @@
 (require 'yasnippet)
 
 (setq yas-snippet-dirs (append yas-snippet-dirs
-			       '("~/development/dotemacs/snippets/")))
+			       '("~/development_personal/dotemacs/snippets/")))
 
 (yas-global-mode 1)
 ;(setq yas/fallback-behavior 'return-nil) ;; customized due a bug of yasnippet with tab2key mode
