@@ -252,8 +252,23 @@
 (with-eval-after-load 'flycheck
   (flycheck-pos-tip-mode))
 
+(defun magit-add-current-branch-to-buffer-and-kill-ring ()
+  "Write the current branch at point copy it to the `kill-ring'."
+  (interactive)
+  (let ((branch (magit-get-current-branch)))
+    (if branch
+        (progn (kill-new branch)
+               (insert branch))
+      (user-error "There is not current branch"))))
 
 
+(defun my-text-mode-hook ()
+  (local-set-key (kbd "H-b") 'magit-add-current-branch-to-buffer-and-kill-ring)
+
+)
+(add-hook 'text-mode-hook 'my-text-mode-hook)
+
+(my-text-mode-hook)
 ;;;; Fonts with ligatures support
 ;;;; Install from: https://github.com/tonsky/FiraCode
 ;; (set-language-environment "UTF-8")

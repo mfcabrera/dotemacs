@@ -9,7 +9,6 @@
 (global-set-key [f6] 'kill-buffer)
 
 
-
 ;; Git
 (global-set-key [(control x)(control g)] 'git-status)
 
@@ -78,7 +77,16 @@
 (define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
 (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
 (define-key projectile-mode-map [?\s-f] 'projectile-find-file)
-(define-key projectile-mode-map [?\s-g] 'projectile-grep)
+(define-key projectile-mode-map [?\s-g] 'helm-do-grep-ag)
 
 
 (define-key projectile-mode-map [?\H-g] 'magit-status)
+
+(global-set-key  [?\H-y] 'helm-yas-complete)
+
+(global-set-key [f8] 'neotree-toggle)
+
+(global-set-key  [?\H-d] 'sp-delete-symbol)
+
+
+(global-set-key   [C-M-tab]  'indent-region)

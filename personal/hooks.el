@@ -47,3 +47,12 @@
             (local-set-key (kbd "C-c b") 'js-send-buffer)
             (local-set-key (kbd "C-c C-b") 'js-send-buffer-and-go)
             (local-set-key (kbd "C-c l") 'js-load-file-and-go)))
+
+;; avoid MD mode to remove trailing whitespaces
+
+(make-variable-buffer-local 'prelude-clean-whitespace-on-save)
+(defun my/markdown-settings () (setq prelude-clean-whitespace-on-save nil))
+(add-hook 'markdown-mode-hook 'my/markdown-settings)
+
+
+(setq projectile-switch-project-action 'neotree-projectile-action)
