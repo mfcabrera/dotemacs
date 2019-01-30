@@ -258,14 +258,12 @@
   (let ((branch (magit-get-current-branch)))
     (if branch
         (progn (kill-new branch)
-               (insert branch))
+               (insert branch " "))
       (user-error "There is not current branch"))))
 
 
 (defun my-text-mode-hook ()
-  (local-set-key (kbd "H-b") 'magit-add-current-branch-to-buffer-and-kill-ring)
-
-)
+  (local-set-key (kbd "H-b") 'magit-add-current-branch-to-buffer-and-kill-ring))
 (add-hook 'text-mode-hook 'my-text-mode-hook)
 
 (my-text-mode-hook)
