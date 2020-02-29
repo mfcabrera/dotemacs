@@ -61,6 +61,15 @@
 (load "personal")
 (load "orgy")
 (load "modes")
+(load "python-personal")
+
+
+;; UTF-8 support
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8-unix)
 
 
 
@@ -77,11 +86,5 @@
 
 
   ;; python setplist
-
-  (when (executable-find "ipython")
-    (setq python-shell-interpreter "ipython"
-          python-shell-interpreter-args "--simple-prompt -i")
-    )
-
 
 (load-theme 'dracula)

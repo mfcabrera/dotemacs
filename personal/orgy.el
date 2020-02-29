@@ -62,7 +62,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
                 "~/Dropbox/Notational Data/org/LearningPath - DS.org.txt"
                 "~/Dropbox/Notational Data/org/MorningRoutine.org.txt"
                 "~/Dropbox/Notational Data/org/work.org.txt"
-                "~/Dropbox/Notational Data/org/ResolutionObjectives2018.org.txt"
+                "~/Dropbox/Notational Data/org/ResolutonObjectives2020.org.txt"
 
                 )
               ))
@@ -283,6 +283,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
                        (org-deadline-warning-days 0)))
            (tags-todo "REFILE")
            (tags "PROJECT-@work+current")
+           (tags-todo "GOAL_TRIM")
            )
 
           ((org-agenda-tag-filter-preset '("-@work")) )
@@ -408,9 +409,10 @@ If FILEXT is provided, return files with extension FILEXT instead."
  '((R . t)
    (emacs-lisp . t)
    (python . t)
-   (sh . t)
+   (shell . t)
    (gnuplot . t)
    (dot . t)
+   (ipython . t)
    ))
 
 

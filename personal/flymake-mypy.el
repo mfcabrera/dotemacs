@@ -24,7 +24,7 @@
 
 (defun flymake-mypy-init ()
   "Init mypy."
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
+  (let* ((temp-file (flymake-proc-init-create-temp-buffer-copy
                      'flymake-create-temp-inplace))
          (local-file (file-relative-name
                       temp-file

@@ -29,65 +29,6 @@
       `((".*" ,user-temporary-file-directory t)))
 (setq auto-save-default nil)
 
-
-
-
-(defun sync-classy ()
-  (interactive)
-  (shrink-window-if-larger-than-buffer)
-  (shell-command "cd ~/development ; rsync --exclude 'data'  -az --progress classy  vmx:classy & " ))
-
-
-(defun sync-embeddings ()
-  (interactive)
-  (shrink-window-if-larger-than-buffer)
-  ;; (shell-command "cd ~/development ; rsync  -az --progress metaprecomp  vmx:metaprecomp & " ))
-  (shell-command "cd ~/development ;  rsync -az --progress embeddings-util devbox:  & " )
-  (shell-command "cd ~/development ;  rsync -az --progress embeddings-util vmx:  & " )
-  )
-
-(defun sync-meta ()
-  (interactive)
-  (shrink-window-if-larger-than-buffer)
-  (shell-command "cd ~/development ; rsync  -az --progress metaprecomp  vmx:metaprecomp & " ))
-
-(defun sync-utiluigi ()
-  (interactive)
-  (shrink-window-if-larger-than-buffer)
-  (shell-command "cd ~/development ; rsync  -az --progress utiluigi  vmx: & " ))
-
-(defun sync-perso ()
-  (interactive)
-  (shrink-window-if-larger-than-buffer)
-  (shell-command "cd ~/development ; rsync --exclude 'data' -az --progress personalization_app  vmx: & " ))
-
-
-(defun sync-sema ()
-  (interactive)
-  (shrink-window-if-larger-than-buffer)
-  (shell-command "cd ~/development ; rsync  -az --compress-level=9 --progress ty-semantic-api  vmx: & " ))
-
-
-;;(global-set-key (kbd "C-c C-, ") 'sync-meta)
-;(global-set-key (kbd "C-c C-, ") 'sync-classy)
-
-(defun ty-hadoop ()
-  (interactive)
-  (browse-url "https://vm1.trustyou.com:5030"))
-
-;(global-set-key (kbd "C-c C-t h") 'ty-hadoop)
-
-
-(defun sync-sentency ()
-  (interactive)
-  (shrink-window-if-larger-than-buffer)
-  (shell-command "cd ~/development ; rsync --exclude='lib/stanford-ner' --exclude=files  -az --progress sentency  vmx:sentency & " ))
-;;(global-set-key (kbd "C-c C-y ") 'sync-sentency)
-
-
-
-
-
 (defun my-insert-quote ()
   (interactive)
   (if (region-active-p)
@@ -182,6 +123,18 @@
              :commands highlight-symbol
              :bind ("s-h" . highlight-symbol))
 
+
+;; Mode line configuration
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode))
+
+(require 'doom-themes)
+;; (doom-themes-neotree-config)
+(doom-themes-org-config)
+;; (load-theme 'doom-dracula t)
+
+
 (defun insert-branch-name ()
   "Insert <p></p> at cursor point."
   (interactive)
@@ -193,64 +146,10 @@
   :commands popup-imenu
   :bind ("M-i" . popup-imenu))
 
-(use-package org-trello
-  :init
-  (custom-set-variables '(org-trello-files '(
-                                             "/Users/miguel/Dropbox/Notational Data/TODO-Casa-Berling.org.txt"))
-                        '(org-trello-current-prefix-keybinding "C-c x")
-                        )
-  )
-
 (set-default-font
  "-*-Consolas-normal-normal-normal-*-17-*-*-*-m-0-iso10646-1"
  )
 
-
-;(set-variable 'flycheck-python-mypy-executable "/Users/mcabrera/anaconda3/bin/mypy")
-(set-variable 'flycheck-python-mypy-args '("--ignore-missing-imports" "--check-untyped-defs" "--strict-optional"))
-
-(flycheck-add-next-checker 'python-flake8 'python-mypy)
-
-
-(require 'py-isort)
-;;(add-hook 'before-save-hook 'py-isort-before-save)
-
-;; This functon is to being able to properly edit Sphinx docs becuse indentation rules with
-;; Python are too strict
-;; Based on the following links:
-;; https://stackoverflow.com/questions/69934/set-4-space-indent-in-emacs-in-text-mode
-;; https://emacs.stackexchange.com/questions/13249/indention-and-tabs-in-fundamental-mode
-;; https://emacs.stackexchange.com/questions/31685/how-to-fix-multiline-string-indentation-in-python-mode
-;; https://emacs.stackexchange.com/questions/26435/how-can-i-disable-indentation-rules-within-docstrings-in-python-mode/29415#29415
-
-;; Keep underscores within a word boundary
-
-
-(defun my-python-indent-line ()
-  (if (eq (car (python-indent-context)) :inside-docstring)
-      (insert-tab)
-    (python-indent-line)))
-
-(defun my-python-mode-hook ()
-  (setq indent-line-function #'my-python-indent-line)
-  (local-set-key [f8] 'company-show-doc-buffer)
-  )
-(add-hook 'python-mode-hook #'my-python-mode-hook)
-(setq-default tab-width 4)
-
-;; treat my_variable as a single word
-(add-hook 'python-mode-hook
-          (lambda () (modify-syntax-entry ?_ "w" python-mode-syntax-table)))
-
-
-(setq elpy-rpc-python-command "/Users/mcabrera/anaconda3/bin/python")
-
-;; (setq python-python-command "/Users/mcabrera/anaconda3/bin/python")
-
-(setq flycheck-python-flake8-executable "/Users/mcabrera/anaconda3/bin/flake8")
-
-(with-eval-after-load 'flycheck
-  (flycheck-pos-tip-mode))
 
 (defun magit-add-current-branch-to-buffer-and-kill-ring ()
   "Write the current branch at point copy it to the `kill-ring'."
@@ -267,39 +166,39 @@
 (add-hook 'text-mode-hook 'my-text-mode-hook)
 
 (my-text-mode-hook)
-;;;; Fonts with ligatures support
-;;;; Install from: https://github.com/tonsky/FiraCode
-;; (set-language-environment "UTF-8")
-;; (set-default-coding-systems 'utf-8)
 
-;; (when (window-system)
-;;   (set-default-font "Fira Code"))
-;; (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
-;;                (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
-;;                (36 . ".\\(?:>\\)")
-;;                (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
-;;                (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
-;;                (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
-;;                (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
-;;                (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
-;;               (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
-;;                (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
-;;                (48 . ".\\(?:x[a-zA-Z]\\)")
-;;                (58 . ".\\(?:::\\|[:=]\\)")
-;;                (59 . ".\\(?:;;\\|;\\)")
-;;                (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
-;;                (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
-;;                (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
-;;                (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
-;;                (91 . ".\\(?:]\\)")
-;;                (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
-;;                (94 . ".\\(?:=\\)")
-;;                (119 . ".\\(?:ww\\)")
-;;                (123 . ".\\(?:-\\)")
-;;                (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
-;;                (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
-;;                )
-;;              ))
-;;   (dolist (char-regexp alist)
-;;     (set-char-table-range composition-function-table (car char-regexp)
-;;                           `([,(cdr char-regexp) 0 font-shape-gstring]))))
+(defun toggle-window-dedicated ()
+  "Control whether or not Emacs is allowed to display another
+buffer in current window."
+  (interactive)
+  (message
+   (if (let (window (get-buffer-window (current-buffer)))
+         (set-window-dedicated-p window (not (window-dedicated-p window))))
+       "%s: Can't touch this!"
+     "%s is up for grabs.")
+   (current-buffer)))
+
+(global-set-key (kbd "H-p t") 'toggle-window-dedicated)
+
+
+(defvar dedicated-mode nil
+  "Mode variable for dedicated minor mode.")
+(make-variable-buffer-local 'dedicated-mode)
+
+(defun dedicated-mode (&optional arg)
+  "Dedicated minor mode."
+  (interactive "P")
+  (setq dedicated-mode (not dedicated-mode))
+  (set-window-dedicated-p (selected-window) dedicated-mode)
+  (if (not (assq 'dedicated-mode minor-mode-alist))
+      (setq minor-mode-alist
+            (cons '(dedicated-mode " D")
+                  minor-mode-alist))))
+
+(provide 'dedicated)
+
+
+;; this makes pre-commit hooks to work
+;; extracted from https://github.com/magit/magit/issues/3419
+(require 'magit)
+(setq magit-git-global-arguments (remove "--literal-pathspecs" magit-git-global-arguments))
