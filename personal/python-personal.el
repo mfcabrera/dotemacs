@@ -1,9 +1,10 @@
 ;(set-variable 'flycheck-python-mypy-executable "/Users/mcabrera/anaconda3/bin/mypy")
-(set-variable 'flycheck-python-mypy-args '("--ignore-missing-imports" "--check-untyped-defs" "--strict-optional"))
+(set-variable 'flycheck-python-mypy-args '("--ignore-missing-imports" "--check-untyped-defs" "--strict-optional" "--follow-imports=skip"))
 
 (flycheck-add-next-checker 'python-flake8 'python-mypy)
 
 (require 'py-isort)
+
 ;;(add-hook 'before-save-hook 'py-isort-before-save)
 
 ;; This functon is to being able to properly edit Sphinx docs becuse indentation rules with
@@ -15,7 +16,6 @@
 ;; https://emacs.stackexchange.com/questions/26435/how-can-i-disable-indentation-rules-within-docstrings-in-python-mode/29415#29415
 
 ;; Keep underscores within a word boundary
-
 
 (defun my-python-indent-line ()
   (if (eq (car (python-indent-context)) :inside-docstring)
@@ -30,12 +30,24 @@
   (insert "import pdb; pdb.set_trace()")
   (highlight-lines-matching-regexp "^[ ]*import pdb; pdb.set_trace()"))
 
+(defun mc-pysort-and-black ()
+  "sort imports and run black on buffer"
+  (interactive)
+  (py-isort-buffer)
+  (python-black-buffer)
+  )
+
+
 (defun my-python-mode-hook ()
   (setq indent-line-function #'my-python-indent-line)
-  (local-set-key [f8] 'company-show-doc-buffer)
+
   (superword-mode)
   (local-set-key "\M-p" 'python-add-breakpoint)
+  (local-set-key (kbd "C-c b") 'mc-pysort-and-black)
+  (local-set-key [f8] 'company-show-doc-buffer)
+  (local-set-key (kbd "C-c v") 'py-isort-buffer)
   )
+
 (add-hook 'python-mode-hook #'my-python-mode-hook)
 (setq-default tab-width 4)
 
@@ -44,38 +56,20 @@
           (lambda () (modify-syntax-entry ?_ "w" python-mode-syntax-table)))
 
 
-(setq elpy-rpc-python-command "/Users/mcabrera/anaconda3/bin/python")
+(setq elpy-rpc-python-command "/usr/local/anaconda3/bin/python")
 
-;; (setq python-python-command "/Users/mcabrera/anaconda3/bin/python")
-
-(setq flycheck-python-flake8-executable "/Users/mcabrera/anaconda3/bin/flake8")
+(setq flycheck-python-flake8-executable "/usr/local/anaconda3/bin/python")
 
 (with-eval-after-load 'flycheck
   (flycheck-pos-tip-mode))
 
 
-
-(setq
- python-shell-interpreter "ipython"
- python-shell-interpreter "ipython"
- python-shell-interpreter-args ""
- python-shell-prompt-regexp "In \\[[0-9]+\\]: "
- python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
- python-shell-completion-setup-code
- "from IPython.core.completerlib import module_completion"
- python-shell-completion-module-string-code
- "';'.join(module_completion('''%s'''))\n"
- python-shell-completion-string-code
- "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
+;; source for this config: https://github.com/jorgenschaefer/elpy/issues/1550#issuecomment-547515504
+;; this problem appears to be Mac OSX only
 (setq python-shell-interpreter "ipython"
-      python-shell-interpreter-args "-i --simple-prompt")
-
-;; Not working
-;; (setq python-shell-interpreter "jupyter"
-;;       python-shell-interpreter-args "console --simple-prompt"
-;;       python-shell-prompt-detect-failure-warning nil)
-;; (add-to-list 'python-shell-completion-native-disabled-interpreters
-;;              "jupyter")
-
+      python-shell-interpreter-args "--simple-prompt -c exec('__import__(\\'readline\\')') -i"
+      python-shell-prompt-detect-failure-warning nil
+      elpy-shell-echo-output nil
+      )
 
 (add-to-list 'elpy-project-ignored-directories "ord_pred_env")
