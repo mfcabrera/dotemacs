@@ -202,3 +202,6 @@ buffer in current window."
 ;; extracted from https://github.com/magit/magit/issues/3419
 (require 'magit)
 (setq magit-git-global-arguments (remove "--literal-pathspecs" magit-git-global-arguments))
+
+
+(setq dash-docs-common-docsets '("Pandas" "Python 3"))
