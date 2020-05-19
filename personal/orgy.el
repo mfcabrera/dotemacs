@@ -75,6 +75,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 (setq org-default-notes-file  (concat "~/Dropbox/Notational Data/org/" "Inbox.org.txt" ))
 (setq org-default-work-file  (concat "~/Dropbox/Notational Data/org/" "work.org.txt" ))
+(setq org-default-learning-file  (concat "~/Dropbox/Notational Data/org/" "learning.org.txt" ))
 
 
 (setq org-capture-templates
@@ -85,6 +86,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
          "* TODO %?\n SCHEDULED:%t\n  %i\n")
         ("w" "Todo - Work" entry (file+headline  org-default-work-file "Misc Tasks")
          "* TODO %?\n SCHEDULED:%t\n  %i\n")
+        ("v" "Talk to Watch" entry (file+headline  org-default-learning-file "VideoQueue")
+         "* %?\n %i\n")
         ("T" "Todo (with link)" entry (file+headline  org-default-notes-file "TASKS")
          "* TODO %?\n SCHEDULED:%t\n  %a\n %i\n")
         ("m" "Task from Email" entry

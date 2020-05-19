@@ -1,4 +1,4 @@
-;(set-variable 'flycheck-python-mypy-executable "/Users/mcabrera/anaconda3/bin/mypy")
+;; Configuration for python development and elpy
 (set-variable 'flycheck-python-mypy-args '("--ignore-missing-imports" "--check-untyped-defs" "--strict-optional" "--follow-imports=skip"))
 
 (flycheck-add-next-checker 'python-flake8 'python-mypy)
@@ -46,6 +46,8 @@
   (local-set-key (kbd "C-c b") 'mc-pysort-and-black)
   (local-set-key [f8] 'company-show-doc-buffer)
   (local-set-key (kbd "C-c v") 'py-isort-buffer)
+  (local-set-key (kbd "C-c m i") 'indent-region)
+  (local-set-key (kbd "C-c C-u") 'string-inflection-python-style-cycle)
   )
 
 (add-hook 'python-mode-hook #'my-python-mode-hook)
