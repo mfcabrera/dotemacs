@@ -4,19 +4,13 @@
 (require 'org-capture)
 (require 'org-protocol)
 
-
-
-
 (require 'markdown-mode)
-;;(require 'haml-mode)
-
 (require 'yasnippet)
 
 (setq yas-snippet-dirs (append yas-snippet-dirs
 			       '("~/development_personal/dotemacs/snippets/")))
 
 (yas-global-mode 1)
-;(setq yas/fallback-behavior 'return-nil) ;; customized due a bug of yasnippet with tab2key mode
 
 ;; Emacs lisp python
 (elpy-enable)
@@ -38,20 +32,12 @@
 (setq org-confirm-babel-evaluate nil)   ;don't prompt me to confirm everytime I want to evaluate a block
 ;;; display/update images in the buffer after I evaluate
 
-(require 'ox-freemind)
-(require 'ox-html)
-
-
 ;; require extra modules
 (require 'prelude-company)
 (require 'prelude-js)
 
 ;; require checks
 (require 'flycheck-demjsonlint)
-(require 'flycheck-mypy)
-(eval-after-load 'flymake '(require 'flymake-mypy))
-
-
 (require 'browse-at-remote)
 
 ;; all the icons and neotree integration

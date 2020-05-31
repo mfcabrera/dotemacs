@@ -1,5 +1,6 @@
 ;; Configuration for python development and elpy
-(set-variable 'flycheck-python-mypy-args '("--ignore-missing-imports" "--check-untyped-defs" "--strict-optional" "--follow-imports=skip"))
+;; My recommendation is to configure things like this either via mypy.ini and similar files and
+;; .dir-locals variables
 
 (flycheck-add-next-checker 'python-flake8 'python-mypy)
 
@@ -60,7 +61,7 @@
 
 (setq elpy-rpc-python-command "/usr/local/anaconda3/bin/python")
 
-(setq flycheck-python-flake8-executable "/usr/local/anaconda3/bin/python")
+(setq flycheck-python-flake8-executable "flake8")
 
 (with-eval-after-load 'flycheck
   (flycheck-pos-tip-mode))
