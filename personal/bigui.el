@@ -17,9 +17,9 @@
                   " "
                   (shell-quote-argument file-name)))
 )
-;; and the code is [PAF-45](https://newyorkerfashion.atlassian.net/browse/PAF-45)
 
-(defun bigui/md-insert-jira-links ()
+;; deprecated
+(defun bigui/md--insert-jira-links ()
   (interactive)
   (progn
     (save-excursion
@@ -33,3 +33,42 @@
       )
     )
  )
+
+
+(defun bigui/jira-links-md-formatter (key baseurl)
+  (format "[%s](%s/%s)" key baseurl key)
+  )
+
+(defun bigui/jira-links-org-formatter (key baseurl)
+  (org-link-make-string (format "%s/%s" key baseurl) key)
+  )
+
+
+(defun bigui/insert-jira-links (formatter)
+  (progn
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "[:space:]*\\(PAF-[0-9]+\\)[[:space:]]+" nil t)
+        (replace-match  (funcall formatter "\\1" "https://newyorkerfashion.atlassian.net/browse/" ) t nil nil 1))
+      (goto-char (point-min))
+      (while (re-search-forward "[:space:]*\\(OQPDS-[0-9]+\\)[[:space:]]+" nil t)
+        (replace-match  (funcall formatter "\\1" "https://newyorkerfashion.atlassian.net/browse/" ) t nil nil 1))
+
+      )
+    )
+ )
+
+
+(defun bigui/insert-jira-links-markdown ()
+ (interactive)
+  (progn
+    (bigui/insert-jira-links #'bigui/jira-links-md-formatter)
+   )
+  )
+
+(defun bigui/insert-jira-links-org ()
+  (interactive)
+  (progn
+    (bigui/insert-jira-links #'bigui/jira-links-org-formatter)
+    )
+  )
