@@ -56,12 +56,14 @@
 ;; Lets start loading file by file
 (add-to-list 'load-path "~/.emacs.d/personal")
 ;; load everything else
+(load "bigui")
 (load "requires")
 (load "bindings")
 (load "personal")
 (load "orgy")
 (load "modes")
 (load "python-personal")
+
 
 
 ;; UTF-8 support
@@ -76,15 +78,33 @@
 ;; deft setup
 (when (require 'deft nil 'noerror)
   (setq
-   deft-extensions '("txt" "tex" "org" "org.txt" "md" "blog.org.txt" "text" "notes.org.txt")
+   deft-extensions '("org" "txt" "org.txt" "md" "blog.org.txt")
    deft-directory "~/Dropbox/Notational Data/"
    deft-text-mode 'org-mode
+   deft-use-filter-string-for-filename t
    deft-use-filename-as-title t
    deft-auto-save-interval 240
+   deft-recursive t
+   deft-default-extension "org"
+   deft-org-mode-title-prefix t
+   deft-markdown-mode-title-level t
+
    )
   (global-set-key (kbd "<C-f9>") 'deft))
 
+;; temporary for deft [[https://github.com/scikit-learn/scikit-learn/issues/15085][ColumnTransformer throws ValueError inappropriately · Issue #15085 · scikit-learn/scikit-learn]]
+(defun org-open-file-with-emacs (path)
+  "Temp replacement function"
+  (org-open-file path t)
+  )
+
+
+
+(setq deft-file-naming-rules
+      '((noslash . "-")
+        (nospace . "-")
+        (case-fn . downcase)))
 
   ;; python setplist
 
-(load-theme 'dracula)
+(load-theme 'doom-dracula)

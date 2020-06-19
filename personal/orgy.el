@@ -13,15 +13,6 @@
                  (org-find-exact-headline-in-buffer headline))))
       (org-refile nil nil (list headline file nil pos))))
 
-
- ;; (defun mike/move-to-today ()
- ;;    "Move current headline to today"
- ;;    (interactive)
- ;;    (org-mark-ring-push)
- ;;    (mike/refile-to "~/Dropbox/Notational Data/TODAY.org.txt" "XXX")
-;;    (org-mark-ring-goto))
-
-
 (setq org-stuck-projects
       '("+PROJECT+current/-DONE" ("NEXT" "TODO") ("someday")  "SCHEDULED:\\|DEADLINE:" ))
 
@@ -49,33 +40,17 @@ If FILEXT is provided, return files with extension FILEXT instead."
 			  org-file-list) ; add files found to result
 	  (add-to-list 'org-file-list org-file)))))))
 
-(setq org-agenda-files
-      (append (sa-find-org-file-recursively "~/Dropbox/Notational Data/org/" "org")
+(setq org-agenda-files (append (sa-find-org-file-recursively "~/Dropbox/Notational Data/org/" "org")))
 
-              '("~/Dropbox/Notational Data/org/Inbox.org.txt" "~/Dropbox/Notational Data/org/learning.org.txt"
-                "~/Dropbox/Notational Data/org/DayliesWeeklies.org.txt"
-                "~/Dropbox/Notational Data/org/CreativeProjects.org.txt"
-                "~/Dropbox/Notational Data/org/TalkIdeas.org.txt"
-                "~/Dropbox/Notational Data/org/TechnicalPersonalProjects.org.txt"
-                "~/Dropbox/Notational Data/org/WeightLoss.org.txt"
-                "~/Dropbox/Notational Data/org/blog-ideas.org.txt"
-                "~/Dropbox/Notational Data/org/LearningPath - DS.org.txt"
-                "~/Dropbox/Notational Data/org/MorningRoutine.org.txt"
-                "~/Dropbox/Notational Data/org/work.org.txt"
-                "~/Dropbox/Notational Data/org/ResolutionObjectives2020.org.txt"
-
-                )
-              ))
-
-(setq WORK-FILES  (append   '("~/Dropbox/Notational Data/org/work.org.txt")  )  )
+(setq WORK-FILES  (append   '("~/Dropbox/Notational Data/org/work.org" "~/Dropbox/Notational Data/org/work-jira.org"  )  )  )
 
 
 (define-key global-map "\C-cc" 'org-capture)
 ;; notes for capture
 
-(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/org/" "Inbox.org.txt" ))
-(setq org-default-work-file  (concat "~/Dropbox/Notational Data/org/" "work.org.txt" ))
-(setq org-default-learning-file  (concat "~/Dropbox/Notational Data/org/" "learning.org.txt" ))
+(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/org/" "Inbox.org" ))
+(setq org-default-work-file  (concat "~/Dropbox/Notational Data/org/" "work.org" ))
+(setq org-default-learning-file  (concat "~/Dropbox/Notational Data/org/" "learning.org" ))
 
 
 (setq org-capture-templates
@@ -107,7 +82,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
         )
       )
 
-
 (add-to-list 'org-modules 'org-habit)
 (add-to-list 'org-modules 'org-checklist)
 
@@ -130,6 +104,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
         ("CANCELED"  . (:foreground "red" :weight bold))
         ("FAILED"  . (:foreground "red" :weight bold))
         ))
+
 
 (setq org-todo-keywords
       '((sequence "TODO" "IN-PROGRESS" "|"  "DONE" )))
@@ -200,8 +175,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 (setq org-remember-default-headline "MISC")
 
-(setq org-default-notes-file  (concat "~/Dropbox/Notational Data/org/" "Inbox.org.txt" ))
-
 ;; Start clock if a remember buffer includes :CLOCK-IN:
 (add-hook 'remember-mode-hook 'my-start-clock-if-needed 'append)
 
@@ -247,17 +220,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
            )
          )
 
-        ("K" "Server List"
-         ( (tags "SERVER")
-           )
-         )
-
-        ("p" "Tareas planeadas"
-         ( (tags "PLANNED")
-           )
-         )
-
-
         ("w" "Things to do at Work"
          (
           (tags  "PROJECT+current+@work")
@@ -275,7 +237,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
          )
 
-        ("h" "thing TODO at Home"
+        ("h" "Personal things / Home"
          ((tags-todo "+dailies+SCHEDULED<=\"<today>\"")
           (tags "+learning+current-@work")
           (tags "reading")
@@ -285,6 +247,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
                         (quote ((agenda time-up priority-down tag-up))))
                        (org-deadline-warning-days 0)))
            (tags-todo "REFILE")
+           (tags-todo "next")
            (tags "PROJECT-@work+current")
            (tags "Q2")
            (tags "Q1")
@@ -307,7 +270,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
          ((org-agenda-tag-filter-preset '("-@work")) )
          ) ;; review waiting items
 
-        ("F" "Weekly Review"
+        ("F" "Weekly Review (Work)"
          ((agenda ""  ((org-agenda-ndays 7))) ;; review upcoming deadlines and appointments
           ;; type "l" in the agenda to review logged items
           (stuck "") ;; review stuck projects as designated by org-stuck-projects
@@ -316,7 +279,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
           (todo "WAITING"))
          ((org-agenda-tag-filter-preset '("+@work")) )
          ) ;; review waiting items
-
 
          ("D" "Daily Action List"
           (
@@ -405,9 +367,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 
 
-
-
-
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((R . t)
@@ -420,114 +379,25 @@ If FILEXT is provided, return files with extension FILEXT instead."
    ))
 
 
-
 ;; Set to the location of your Org files on your local system
 (setq org-directory "~/Dropbox/Notational Data/org")
 ;; Set to the name of the file where new notes will be stored
-(setq org-mobile-inbox-for-pull "~/Dropbox/Notational Data/flagged.org")
-;; Set to <your Dropbox root directory>/MobileOrg.
-(setq org-mobile-directory "~/Dropbox/Aplicaciones/MobileOrg")
+;; (require 'calfw-org)
 
-(require 'calfw-org)
-
-
-;; Some function to parse custom rss
-
-(defun org-feed-parse-rss-sputnik (buffer)
-  "Parse BUFFER for RSS feed entries.
-Returns a list of entries, with each entry a property list,
-containing the properties `:guid' and `:item-full-text'."
-  (let ((case-fold-search t)
-	entries beg end item guid entry)
-    (with-current-buffer buffer
-      (widen)
-      (goto-char (point-min))
-      (while (re-search-forward "<entry\\>.*?>" nil t)
-	(setq beg (point)
-	      end (and (re-search-forward "</entry>" nil t)
-		       (match-beginning 0)))
-	(setq item (buffer-substring beg end)
-	      guid (if (string-match "<id\\>.*?>\\(.*?\\)</id>" item)
-		       (org-match-string-no-properties 1 item)))
-	(setq entry (list :guid guid :item-full-text item))
-	(push entry entries)
-	(widen)
-	(goto-char end))
-      (nreverse entries))))
+(defun mfcabrera/org-agenda-process-inbox-item ()
+  "Process a single item in the org-agenda."
+  (org-with-wide-buffer
+   (org-agenda-set-tags)
+   (org-agenda-priority)
+   (org-agenda-refile nil nil t)))
 
 
-(defun org-feed-parse-atom-entry-sputik (entry)
-  "Parse the `:item-full-text' as a sexp and create new properties."
-  (let ((xml (car (read-from-string (plist-get entry :item-full-text)))))
-    ;; Get first <link href='foo'/>.
-    (setq entry (plist-put entry :link
-			   (xml-get-attribute
-			    (car (xml-get-children xml 'link))
-			    'href)))
-    ;; Add <title/> as :title.
-    (setq entry (plist-put entry :title
-			   (xml-substitute-special
-			    (car (xml-node-children
-				  (car (xml-get-children xml 'title)))))))
-    (setq entry (plist-put entry :summary
-			   (xml-substitute-special
-			    (car (xml-node-children
-				  (car (xml-get-children xml 'summary)))))))
 
-    (let* ((content (car (xml-get-children xml 'content)))
-	   (type (xml-get-attribute-or-nil content 'type)))
-      (when content
-	(cond
-	 ((string= type "text")
-	  ;; We like plain text.
-	  (setq entry (plist-put entry :description
-				 (xml-substitute-special
-				  (car (xml-node-children content))))))
-	 ((string= type "html")
-	  ;; TODO: convert HTML to Org markup.
-	  (setq entry (plist-put entry :description
-				 (xml-substitute-special
-				  (car (xml-node-children content))))))
-	 ((string= type "xhtml")
-	  ;; TODO: convert XHTML to Org markup.
-	  (setq entry (plist-put entry :description
-				 (prin1-to-string
-				  (xml-node-children content)))))
-	 (t
-	  (setq entry (plist-put entry :description
-				 (prin1-to-string
-				  (xml-node-children content))))))))
-    entry))
+;; org-roam configuration
 
-(defcustom org-feed-save-after-adding t
-  "Non-nil means save buffer after adding new feed items."
-  :group 'org-feed
-  :type 'boolean)
-
-(setq org-feed-alist
-      '(
-        ("Data Tau"
-         "http://www.datatau.com/rss"
-         "~/Dropbox/Notational Data/tech-feed.org.txt" "DataTau")
-
-        ("Sputnik"
-       "http://www.sputnik-kino.com/program.rss"
-       "~/Dropbox/Notational Data/kino-feed.org.txt" "Sputnik Kino" :parse-entry org-feed-parse-atom-entry-sputik
-       :template  "\n* %h %summary \n  %U\n %link \n %description\n\n"
-       :parse-feed org-feed-parse-atom-feed)
-
-       ("News YC"
-       "http://news.ycombinator.com/rss"
-       "~/Dropbox/Notational Data/tech-feed.org.txt" "News YC")
-
-      ))
-
-;(defun org-summary-todo (n-done n-not-done)
-;  \"Switch entry to DONE when all subentries are done, to TODO otherwise.\"
-;  (let (org-log-done org-log-states)   ; turn off logging
-;    (org-todo (if (= n-not-done 0) \"DONE\" \"TODO\"))))
-
-;(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-
-
-;;(setq org-src-fontify-natively t)
+(setq org-roam-directory  "~/Dropbox/Notational Data/")
+(setq org-roam-link-title-format "R:%s")
+(setq org-roam-index-file "index.org")
+(setq org-roam-graph-exclude-matcher '("private" "dailies" "repeaters"))
+(setq org-roam-completion-system 'helm)
+(require 'org-roam-protocol)

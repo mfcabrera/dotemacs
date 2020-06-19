@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: roamtags
+# key: tgs
+# binding: direct-keybinding
+# --
+- tags :: $0
