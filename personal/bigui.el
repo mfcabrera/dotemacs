@@ -40,7 +40,7 @@
   )
 
 (defun bigui/jira-links-org-formatter (key baseurl)
-  (org-link-make-string (format "%s/%s" key baseurl) key)
+  (org-link-make-string (format "%s/%s" baseurl key) key)
   )
 
 
