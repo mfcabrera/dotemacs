@@ -36,11 +36,11 @@
 
 
 (defun bigui/jira-links-md-formatter (key baseurl)
-  (format "[%s](%s/%s)" key baseurl key)
+  (format "[%s](%s%s)" key baseurl key)
   )
 
 (defun bigui/jira-links-org-formatter (key baseurl)
-  (org-link-make-string (format "%s/%s" baseurl key) key)
+  (org-link-make-string (format "%s%s" baseurl key) key)
   )
 
 
