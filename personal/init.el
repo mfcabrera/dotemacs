@@ -92,7 +92,7 @@
    )
   (global-set-key (kbd "<C-f9>") 'deft))
 
-;; temporary for deft [[https://github.com/scikit-learn/scikit-learn/issues/15085][ColumnTransformer throws ValueError inappropriately · Issue #15085 · scikit-learn/scikit-learn]]
+;; temporary for deft
 (defun org-open-file-with-emacs (path)
   "Temp replacement function"
   (org-open-file path t)

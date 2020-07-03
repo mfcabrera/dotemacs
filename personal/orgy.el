@@ -52,6 +52,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
 (setq org-default-work-file  (concat "~/Dropbox/Notational Data/org/" "work.org" ))
 (setq org-default-learning-file  (concat "~/Dropbox/Notational Data/org/" "learning.org" ))
 
+(setq  org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS Effort")
+
 
 (setq org-capture-templates
       '(("l" "Link" entry
@@ -401,3 +403,46 @@ If FILEXT is provided, return files with extension FILEXT instead."
 (setq org-roam-graph-exclude-matcher '("private" "dailies" "repeaters"))
 (setq org-roam-completion-system 'helm)
 (require 'org-roam-protocol)
+
+(setq org-roam-capture-templates '(
+                                   ("d" "default"
+                                    plain #'org-roam-capture--get-point
+                                    "%?" :file-name "%<%Y%m%d%H%M%S>-${slug}"
+                                    :head "#+title: ${title}  "
+                                    :unnarrowed t)
+
+                                   ("p" "private" plain (function org-roam-capture--get-point)
+                                    "%?"
+                                    :file-name "private/${slug}"
+                                    :head "#+title: ${title}\n"
+                                    :unnarrowed t)
+
+                                   ("c" "concept" plain (function org-roam--capture-get-point)
+                                    "%?"
+                                    :file-name "concepts/${slug}"
+                                    :head " #+title: ${title}\n - tags :: "
+                                    :unnarrowed t))
+
+
+      )
+
+
+(setq org-roam-capture-ref-templates
+      '(("r" "reference" plain (function org-roam-capture--get-point)
+         "%?"
+         :file-name "references/${slug}"
+         :head "#+title: ${title}
+#+roam_key: ${ref}
+#+roam_tags: website
+- source :: ${ref}"
+         :unnarrowed t)))
+
+(setq orb-templates
+      '(("r" "reference" plain (function org-roam-capture--get-point)
+         "%?"
+         :file-name "references/${citekey}"
+         :head "#+title: ${title}
+#+roam_key: ${ref}
+#+roam_tags: ${type}
+- source :: ${ref}"
+         :unnarrowed t)))
