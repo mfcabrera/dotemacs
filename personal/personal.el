@@ -146,9 +146,7 @@
   :commands popup-imenu
   :bind ("M-i" . popup-imenu))
 
-(set-default-font
- "-*-Consolas-normal-normal-normal-*-17-*-*-*-m-0-iso10646-1"
- )
+(set-face-font 'default "Menlo-20")
 
 
 (defun magit-add-current-branch-to-buffer-and-kill-ring ()
