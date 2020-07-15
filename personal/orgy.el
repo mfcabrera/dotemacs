@@ -446,3 +446,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
 #+roam_tags: ${type}
 - source :: ${ref}"
          :unnarrowed t)))
+
+
+;; This is for og to display larger equations
+;; source https://stackoverflow.com/questions/11272236/how-to-make-formule-bigger-in-org-mode-of-emacs
+(setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))

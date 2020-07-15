@@ -72,3 +72,11 @@
     (bigui/insert-jira-links #'bigui/jira-links-org-formatter)
     )
   )
+
+
+(defun bigui/markdown-convert-region-to-org ()
+  "Convert the current region content from markdown to orgmode format replacing the region contents"
+  (interactive)
+  (shell-command-on-region (region-beginning) (region-end)
+                           "pandoc -f markdown -t org "  (current-buffer) t)
+  )
