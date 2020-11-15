@@ -5,6 +5,7 @@
 (flycheck-add-next-checker 'python-flake8 'python-mypy)
 
 (require 'py-isort)
+(setq py-isort-options '("-l 100"  "-m3" "--trailing-comma"))
 
 ;;(add-hook 'before-save-hook 'py-isort-before-save)
 
@@ -76,3 +77,13 @@
       )
 
 (add-to-list 'elpy-project-ignored-directories "ord_pred_env")
+
+
+(use-package buftra
+  :straight (:host github :repo "humitos/buftra.el"))
+
+(use-package py-autoflake
+  :straight (:host github :repo "humitos/py-cmd-buffer.el")
+  :hook (python-mode . py-autoflake-enable-on-save)
+  :config
+  (setq py-autoflake-options '("--expand-star-imports"   "--remove-all-unused-imports")))

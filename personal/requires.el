@@ -138,11 +138,13 @@
 
 (require 'org-journal)
 (setq
- org-journal-date-prefix "#+TITLE: "
- org-journal-file-format "%Y-%m-%d.org"
+ ;; org-journal-date-prefix "#+TITLE: "
+ org-journal-file-header  "#+TITLE: Monthly Journal\n#+STARTUP: folded"
+ org-journal-file-format "%Y-%m.org"
  org-journal-dir "~/Dropbox/Notational Data/journal/"
  org-journal-date-format "%A, %d %B %Y"
  org-journal-enable-agenda-integration t
+ org-journal-file-type 'monthly
  )
 (global-set-key (kbd "C-c C-j") nil)
 (global-set-key (kbd "C-c n j")  #'org-journal-new-entry)
@@ -154,3 +156,51 @@
   (save-buffer)
   (kill-buffer-and-window))
 (define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
+
+
+(eval-after-load "org-present"
+  '(progn
+     (add-hook 'org-present-mode-hook
+               (lambda ()
+                 (org-present-big)
+               ;;  (org-display-inline-images)
+                 (org-present-hide-cursor)
+                 (org-present-read-only)))
+     (add-hook 'org-present-mode-quit-hook
+               (lambda ()
+                 (org-present-small)
+               ;;  (org-remove-inline-images)
+                 (org-present-show-cursor)
+                 (org-present-read-write)))
+     (add-hook 'org-present-after-navigate-functions
+               (lambda ()
+                 (org-display-inline-images t t)
+                 ;;  (org-remove-inline-images)
+                 (org-present-show-cursor)
+                 (org-present-read-write)))
+
+     )
+
+
+
+
+
+  )
+
+
+
+
+;; (eval-after-load "org-present"
+;;   '(progn
+;;      (add-hook 'org-present-mode-hook
+;;                (lambda ()
+;;                  (org-present-big)
+;;                 ;; (org-toggle-inline-images)
+;;                  (org-present-hide-cursor)
+;;                  (org-present-read-only)))
+;;      (add-hook 'org-present-mode-quit-hook
+;;                (lambda ()
+;;                  (org-present-small)
+;;                  ;;(org-remove-inline-images)
+;;                  (org-present-show-cursor)
+;;                  (org-present-read-write)))))

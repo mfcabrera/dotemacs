@@ -18,20 +18,27 @@
 
 
 ;; Mac OS Fixes - Spanish Keyboard
-(global-set-key (kbd "M-ç") "}")
+;(global-set-key (kbd "M-ç") "}")
 (global-set-key (kbd "M-ñ") "~")
+
 (global-set-key [(meta \+)] "]")
 (global-set-key (kbd "M-ç") "}")
 (global-set-key (kbd "M-º") "\\")
-(global-set-key "\M-<" "\\")
-;;(global-set-key "\M-¡" "\\")
+;; (global-set-key "\M-<" "\\")
+(global-set-key (kbd "M-¡") "\\")
 (global-set-key "\M-3" "#")
 (global-set-key "\M-2" "@")
 (global-set-key "\M-1" "|")
 (global-set-key [end] 'end-of-line )
 (global-set-key [home] 'beginning-of-line )
-(global-set-key (kbd "M-<tab>")  "\\")
-(global-set-key (kbd "M-s-\\") 'indent-region)
+;;(global-set-key (kbd "M-<tab>")  "\\")
+;;(global-set-key (kbd "M-s-\\") 'indent-region)
+(global-set-key (kbd "M-/") 'comment-region)
+
+;; English Keyboard changes
+(global-set-key (kbd "±") "|")
+(global-set-key (kbd "§") "\\")
+;(global-set-key (kbd "\\") 'newline)
 
 
 ;; Use regexp search by default
@@ -58,13 +65,14 @@
 
 ;; Org Mode
 (define-key global-map "\C-ca" 'org-agenda)
-(global-set-key "\C-cb" 'org-iswitchb)
+(global-set-key "\C-cb" 'org-switchb)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key (kbd "<f12>") 'org-agenda)
 ;; (global-set-key "\C-ct" 'mike/move-to-today)
 
 
 ;; Helm Mode - I want to complete wit Tab and stuff
+(require 'helm)
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
 (define-key helm-map (kbd "C-j")  'helm-select-action) ; list actions using C-z

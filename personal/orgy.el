@@ -6,6 +6,15 @@
 ;; Log into a drawer instead of flodding
 (setq org-log-into-drawer t)
 
+;; let's make org-mode nicer
+(require 'org-superstar)
+(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+
+;; variable pitch
+;; (add-hook 'org-mode-hook 'variable-pitch-mode)
+
+(setq calendar-week-start-day 1)
+
 (defun mike/refile-to (file headline)
     "Move current headline to specified location"
     (let ((pos (save-excursion
@@ -50,7 +59,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
 
 (setq org-default-notes-file  (concat "~/Dropbox/Notational Data/org/" "Inbox.org" ))
 (setq org-default-work-file  (concat "~/Dropbox/Notational Data/org/" "work.org" ))
-(setq org-default-learning-file  (concat "~/Dropbox/Notational Data/org/" "learning.org" ))
+(setq org-default-learning-file  (concat "~/Dropbox/Notational Data/org/" "learning_profdev.org" ))
 
 (setq  org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS Effort")
 
@@ -63,8 +72,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
          "* TODO %?\n SCHEDULED:%t\n  %i\n")
         ("w" "Todo - Work" entry (file+headline  org-default-work-file "Misc Tasks")
          "* TODO %?\n SCHEDULED:%t\n  %i\n")
-        ("v" "Talk to Watch" entry (file+headline  org-default-learning-file "VideoQueue")
-         "* %?\n %i\n")
+        ("v" "Talk to Watch" entry (file+headline  org-default-learning-file "Talks and Conference Video Queue")
+         "* %a\n %i  " :immediate-finish 1)
         ("T" "Todo (with link)" entry (file+headline  org-default-notes-file "TASKS")
          "* TODO %?\n SCHEDULED:%t\n  %a\n %i\n")
         ("m" "Task from Email" entry
@@ -101,7 +110,7 @@ If FILEXT is provided, return files with extension FILEXT instead."
         ("THIS-WEEK"  . (:foreground "yellow" :weight bold))
         ("PARTIAL"  . (:foreground "orange" :weight bold))
         ("NEXT"  .  org-warning)
-        ("DONE"  .  (:foreground "lightgreen" :weight bold))
+       ;; ("DONE"  .  (:foreground "lightgreen" :weight bold))
         ("COMPLETED"  .  (:foreground "lightgreen" :weight bold))
         ("CANCELED"  . (:foreground "red" :weight bold))
         ("FAILED"  . (:foreground "red" :weight bold))
@@ -117,8 +126,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
 ;; Org Mode Behaviour
 ;; Avoid tags inheritance for specific tags
 (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META" "NEXT" "crypt" "desparche" "writing" "reading"))
-
-
 
 
 ;; Misc options for org-mode
@@ -162,31 +169,6 @@ If FILEXT is provided, return files with extension FILEXT instead."
             (org-entry-get-multivalued-property (point) "Effort"))))
       (unless (equal effort "")
         (org-set-property "Effort" effort)))))
-
-;;
-;; REMEMBER SETUP
-;;
-;;(org-remember-insinuate)
-(define-key global-map "\C-cr" 'org-remember)
-
-;; Keep clocks running
-(setq org-remember-clock-out-on-exit nil)
-
-;; C-c C-c stores the note immediately
-(setq org-remember-store-without-prompt t)
-
-(setq org-remember-default-headline "MISC")
-
-;; Start clock if a remember buffer includes :CLOCK-IN:
-(add-hook 'remember-mode-hook 'my-start-clock-if-needed 'append)
-
-(defun my-start-clock-if-needed ()
-  (save-excursion
-    (goto-char (point-min))
-    (when (re-search-forward " *:CLOCK-IN: *" nil t)
-      (replace-match "")
-      (org-clock-in))))
-
 
 ;; REFILE SETUP
 ; Targets include this file and any file contributing to the agenda - up to 5 levels deep
@@ -251,8 +233,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
            (tags-todo "REFILE")
            (tags-todo "next")
            (tags "PROJECT-@work+current")
-           (tags "Q2")
-           (tags "Q1")
+           (tags "Q4")
+           (tags "Q3")
            )
 
           ((org-agenda-tag-filter-preset '("-@work")) )

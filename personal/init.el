@@ -8,21 +8,16 @@
 (setq inhibit-startup-message t)
 (menu-bar-mode 1)
 ;;(tool-bar-mode nil)
-;(scroll-bar-mode nil)
+(scroll-bar-mode -1)
 
 ;; this is me
 (setq user-mail-address "mfcabrera@gmail.com")
 (setq user-full-name "Miguel Cabrera")
 
 ;; personal preferences
-;;(setq stack-trace-on-error t) ;; ecb workaround
 (mouse-wheel-mode t)
-(line-number-mode 1)
-(global-linum-mode t)
 (column-number-mode 1)
 (global-font-lock-mode t)
-(show-paren-mode 1)
-(prefer-coding-system 'utf-8)
 
 (setq case-fold-search t
       search-highlight t
@@ -38,7 +33,7 @@
 (delete-selection-mode 1)
 
 (setq c-default-style "linux"
-          c-basic-offset 4)
+      c-basic-offset 4)
 
 ;; nice parentheses
 (show-paren-mode t)
@@ -55,7 +50,25 @@
 
 ;; Lets start loading file by file
 (add-to-list 'load-path "~/.emacs.d/personal")
+(add-to-list 'load-path "~/.prelude.emacs.d/personal")
 ;; load everything else
+
+;; setup straight + use-package
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(straight-use-package 'use-package)
+
+
 (load "bigui")
 (load "requires")
 (load "bindings")
@@ -63,7 +76,6 @@
 (load "orgy")
 (load "modes")
 (load "python-personal")
-
 
 
 ;; UTF-8 support
@@ -98,13 +110,7 @@
   (org-open-file path t)
   )
 
-
-
 (setq deft-file-naming-rules
       '((noslash . "-")
         (nospace . "-")
         (case-fn . downcase)))
-
-  ;; python setplist
-
-(load-theme 'doom-dracula)

@@ -36,7 +36,7 @@
     (insert "''")
     (backward-char)))
 
-(global-set-key (kbd "M-¡") 'my-insert-quote)
+;; (global-set-key (kbd "M-¡") 'my-insert-quote)
 
 
 (defun set-exec-path-from-shell-PATH ()
@@ -129,10 +129,11 @@
   :ensure t
   :hook (after-init . doom-modeline-mode))
 
+;; doom-themes
 (require 'doom-themes)
 ;; (doom-themes-neotree-config)
-(doom-themes-org-config)
-;; (load-theme 'doom-dracula t)
+;; (doom-themes-org-config)
+(load-theme 'dracula)
 
 
 (defun insert-branch-name ()
@@ -145,9 +146,6 @@
 (use-package popup-imenu
   :commands popup-imenu
   :bind ("M-i" . popup-imenu))
-
-(set-face-font 'default "Menlo-20")
-
 
 (defun magit-add-current-branch-to-buffer-and-kill-ring ()
   "Write the current branch at point copy it to the `kill-ring'."
@@ -203,3 +201,25 @@ buffer in current window."
 
 
 (setq dash-docs-common-docsets '("Pandas" "Python 3"))
+
+;; faces configuration
+
+(set-face-font 'default "Menlo-20")
+;; (set-face-attribute 'default nil :font "Menlo-20")
+;; (set-face-attribute 'fixed-pitch nil :font "Menlo-20")
+;; (set-face-attribute 'variable-pitch nil :font "FiraGO-24")
+
+
+;; (custom-theme-set-faces
+;;  'user
+;;  '(org-block ((t (:inherit fixed-pitch))))
+;;  '(org-code ((t (:inherit (shadow fixed-pitch)))))
+;;  '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+;;  '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+
+;;  '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+;;  '(org-property-value ((t (:inherit fixed-pitch))) t)
+;;  '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+;;  '(org-table ((t (:inherit fixed-pitch))))
+;;  '(org-tag ((t (:inherit (shadow fixed-pitch) ))))
+;;  '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
