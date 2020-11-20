@@ -62,5 +62,5 @@
 ;; support for editorconfig
 (package! editorconfig)
 
-;;
+;; dash docs
 (package! dash-docs)
