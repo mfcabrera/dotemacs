@@ -166,6 +166,7 @@
    org-default-work-files   (list org-default-work-file)
    org-default-learning-file  (concat org-directory "org/" "learning_profdev.org")
    org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS Effort"
+   org-startup-fold 'fold
    )
   ;; make latex formulas larger
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
