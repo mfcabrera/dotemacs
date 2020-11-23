@@ -9,6 +9,14 @@
 (setq user-full-name "Miguel Cabrera"
       user-mail-address "mfcabrera@gmail.com")
 
+;; utility macro to return something based on the current system running
+(defmacro mac-or-linux (value-for-mac value-for-linux)
+  (cond
+   ((eq system-type 'darwin) value-for-mac)
+   ((member system-type '(gnu gnu/linux gnu/kfreebsd)) value-for-linux)
+   )
+)
+
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
 ;;
@@ -23,12 +31,35 @@
 ;;
 ;; doom-variable-pitch-font (font-spec :family "sans" :size 13))
 ;;
+;;
+;;
 
-(setq doom-font (font-spec :family "Hack" :size 16)
+(setq doom-font (font-spec :family "Hack" :size (mac-or-linux 18 16) )
       doom-variable-pitch-font (font-spec :family "Fira Sans") ; inherits `doom-font''s :size
       doom-big-font (font-spec :size 20)
-      doom-unicode-font (font-spec :size 16)
- )
+      doom-unicode-font (font-spec :size (mac-or-linux 18 16))
+      )
+
+;; Persist Emacs’ initial frame position, dimensions and/or full-screen state across sessions
+;; add to ~/.doom.d/config.el
+(when-let (dims (doom-store-get 'last-frame-size))
+  (cl-destructuring-bind ((left . top) width height fullscreen) dims
+    (setq initial-frame-alist
+          (append initial-frame-alist
+                  `((left . ,left)
+                    (top . ,top)
+                    (width . ,width)
+                    (height . ,height)
+                    (fullscreen . ,fullscreen))))))
+
+(defun save-frame-dimensions ()
+  (doom-store-put 'last-frame-size
+                  (list (frame-position)
+                        (frame-width)
+                        (frame-height)
+                        (frame-parameter nil 'fullscreen))))
+
+(add-hook 'kill-emacs-hook #'save-frame-dimensions)
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -69,14 +100,6 @@
   ;; is the same the user would see in Terminal.app
   (bigui/set-exec-path-from-shell-PATH))
 
-
-;; utility macro to return something based on the current system running
-(defmacro mac-or-linux (value-for-mac value-for-linux)
-  (cond
-   ((eq system-type 'darwin) value-for-mac)
-   ((member system-type '(gnu gnu/linux gnu/kfreebsd)) value-for-linux)
-   )
-)
 
 ;; Misc Options - many of the preferred options are set in the default doom
 ;; Emacs config
