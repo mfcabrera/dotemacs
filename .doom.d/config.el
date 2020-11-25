@@ -189,7 +189,8 @@
    org-default-work-files   (list org-default-work-file)
    org-default-learning-file  (concat org-directory "org/" "learning_profdev.org")
    org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS Effort"
-   org-startup-fold 'fold
+   org-startup-folded 'overview
+   org-agenda-inhibit-startup nil
    )
   ;; make latex formulas larger
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
@@ -568,3 +569,23 @@
   :config
   (setq dash-docs-common-docsets '("Pandas" "Python 3"))
 )
+
+
+;; (use-package! conda
+;;   :config
+;;   (setq conda-env-autoactivate-mode t)
+;; )
+(after! python
+(add-hook 'python-mode-hook 'conda-env-autoactivate-mode)
+(add-hook 'python-mode-hook 'pyvenv-mode)
+)
+
+
+(use-package! pyvenv)
+
+
+(use-package! py-isort
+  :config
+  (setq py-isort-options '("-l 100"  "-m3" "--trailing-comma")
+        )
+  )

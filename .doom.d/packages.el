@@ -64,3 +64,5 @@
 
 ;; dash docs
 (package! dash-docs)
+
+(package! pyvenv)
