@@ -95,12 +95,6 @@
 (load! "bigui.el") ; personal functions
 
 
-(when (and window-system (eq system-type 'darwin))
-  ;; When started from Emacs.app or similar, ensure $PATH
-  ;; is the same the user would see in Terminal.app
-  (bigui/set-exec-path-from-shell-PATH))
-
-
 ;; Misc Options - many of the preferred options are set in the default doom
 ;; Emacs config
 (setq
@@ -109,17 +103,10 @@
  visible-bell t
  )
 
-;; UTF-8 support
-(prefer-coding-system       'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8-unix)
-
 (setq NOTES-DIRECTORY org-directory)
 
 ;; Deft  Notes configuration
-(use-package! deft
+(after! deft
    :config
      (setq
       deft-extensions '("org" "txt" "org.txt" "md" "blog.org.txt")
@@ -140,7 +127,7 @@
 )
 
 ;; Configure custom snippets
-(use-package! yasnippet
+(after! yasnippet
   :config
   (setq
    yas-snippet-dirs (append yas-snippet-dirs '("~/dotemacs/snippets/"))
@@ -165,13 +152,13 @@
 ;;    )
 ;;   )
 
-(use-package! flycheck
+(after! flycheck
   :config
   (flycheck-add-next-checker 'python-flake8 'python-mypy)
 )
 
 ; UI MISC STUFF
-(use-package! all-the-icons
+(after! all-the-icons
   :config
   (setq neo-theme (if window-system 'icons 'nerd))
 )
@@ -188,8 +175,7 @@
    org-default-work-file   (concat org-directory "org/" "work.org")
    org-default-work-files   (list org-default-work-file)
    org-default-learning-file  (concat org-directory "org/" "learning_profdev.org")
-   org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS Effort"
-   org-startup-folded 'overview
+   org-startup-folded 't
    org-agenda-inhibit-startup nil
    )
   ;; make latex formulas larger
@@ -222,6 +208,7 @@
          "* %?\n %i")
         )
       )
+
 
   (add-to-list 'org-modules 'org-habit)
   (add-to-list 'org-modules 'org-checklist)
@@ -396,23 +383,7 @@
         )
 
       )
-
-  ;; org-babel configuration
-
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((R . t)
-   (emacs-lisp . t)
-   (python . t)
-   (shell . t)
-   (gnuplot . t)
-   (dot . t)
-   (ipython . t)
-   ))
-
-
 )
-
 
 ;; org-additional packages
 
@@ -433,9 +404,6 @@
   ;; some of this is already setup by org-roam plugin
   (map! :leader
         :prefix "n"
-        :desc "org-roam" "l" #'org-roam
-        :desc "org-roam-insert" "i" #'org-roam-insert
-        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
         :desc "org-roam-find-file" "f" #'org-roam-find-file
         :desc "org-roam-insert" "i" #'org-roam-insert
         :desc "org-roam-capture" "c" #'org-roam-capture)
@@ -476,14 +444,9 @@
 - source :: ${ref}"
          :unnarrowed t))))
 
-(use-package! org-roam-protocol
-  :after org-protocol)
-
-(use-package! org-roam-server)
-
 
 ;; org-journal
-(use-package! org-journal
+(after! org-journal
   :config
   (setq
 
@@ -502,13 +465,13 @@
   (interactive)
   (save-buffer)
   (kill-buffer-and-window))
-(define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
+;(define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
 
 ;;;;;;;;;
 ;; org-ref and related packages
 ;;;;;;;;;
 
-(use-package! org-ref
+(after! org-ref
   :config
   (setq
    reftex-default-bibliography '("~/Dropbox/references.bibtext")
@@ -551,13 +514,6 @@
   :config
   (setq org-fancy-priorities-list '("⚡" "⬆" "⬇" "☕")))
 
-
-;; Editorconfig
-(use-package! editorconfig
-  :config
-  (editorconfig-mode 1)
-)
-
 ;; this makes pre-commit hooks to work
 ;; extracted from https://github.com/magit/magit/issues/3419
 (use-package! magit
@@ -579,9 +535,6 @@
 (add-hook 'python-mode-hook 'conda-env-autoactivate-mode)
 (add-hook 'python-mode-hook 'pyvenv-mode)
 )
-
-
-(use-package! pyvenv)
 
 
 (use-package! py-isort
