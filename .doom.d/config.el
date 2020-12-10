@@ -176,6 +176,8 @@
    org-default-work-files   (list org-default-work-file)
    org-default-learning-file  (concat org-directory "org/" "learning_profdev.org")
    org-startup-folded 't
+   org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
+   org-columns-default-format-for-agenda "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-agenda-inhibit-startup nil
    )
   ;; make latex formulas larger
@@ -290,7 +292,7 @@
                       (org-agenda-files org-default-work-files)
                       (org-agenda-sorting-strategy
                        (quote ((agenda time-up priority-down tag-up) )))
-                      (org-deadline-warning-days 0)
+                      (org-deadline-warning-days 3)
                       ))
           (tags-todo "email+@work")
           )
@@ -302,15 +304,14 @@
           (tags "+learning+current-@work")
           (tags "reading")
           (tags "writing")
-           (agenda "" ((org-agenda-span 'day)
+           (agenda "" ((org-agenda-span '3)
                        (org-agenda-sorting-strategy
                         (quote ((agenda time-up priority-down tag-up))))
-                       (org-deadline-warning-days 0)))
+                       (org-deadline-warning-days 3)))
            (tags-todo "REFILE")
            (tags-todo "next")
            (tags "PROJECT-@work+current")
            (tags "Q4")
-           (tags "Q3")
            )
 
           ((org-agenda-tag-filter-preset '("-@work")) )
