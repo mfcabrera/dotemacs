@@ -66,3 +66,4 @@
 (package! dash-docs)
 
 (package! pyvenv)
+(package! python-black)

@@ -101,7 +101,8 @@
  ispell-dictionary "english"
  standard-indent 8
  visible-bell t
- )
+ show-paren-style 'expression ;; show the whole expression
+)
 
 (setq NOTES-DIRECTORY org-directory)
 
@@ -475,7 +476,7 @@
 (after! org-ref
   :config
   (setq
-   reftex-default-bibliography '("~/Dropbox/references.bibtext")
+   reftex-default-bibliography '("~/Dropbox/bibliography/references.bib")
    org-ref-bibliography-notes "~/Dropbox/Notational Data/biblio-notes.org"
    org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
    org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/"
@@ -543,3 +544,6 @@
   (setq py-isort-options '("-l 100"  "-m3" "--trailing-comma")
         )
   )
+
+(use-package! python-black
+  :after python)
