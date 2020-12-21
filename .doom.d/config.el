@@ -180,6 +180,9 @@
    org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-columns-default-format-for-agenda "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-agenda-inhibit-startup nil
+   ;; this makes ivy works properly on refile
+   ;; https://github.com/abo-abo/swiper/issues/1254
+   org-outline-path-complete-in-steps nil
    )
   ;; make latex formulas larger
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
