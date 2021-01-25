@@ -38,6 +38,7 @@
       doom-variable-pitch-font (font-spec :family "Fira Sans") ; inherits `doom-font''s :size
       doom-big-font (font-spec :size 20)
       doom-unicode-font (font-spec :size (mac-or-linux 18 16))
+      doom-modeline-major-mode-icon t
       )
 
 ;; Persist Emacs’ initial frame position, dimensions and/or full-screen state across sessions
@@ -106,6 +107,7 @@
 
 (setq NOTES-DIRECTORY org-directory)
 
+
 ;; Deft  Notes configuration
 (after! deft
    :config
@@ -135,7 +137,6 @@
    yas-global-mode t
    )
 )
-
 
 ;; Python related stuff
 (setq ANACONDA-PYTHON (mac-or-linux "/usr/local/anaconda3/bin/python" "~/anaconda3/bin/python"))
@@ -171,6 +172,7 @@
   (setq org-agenda-files (append (bigui/find-org-file-recursively "~/Dropbox/Notational Data/org/" "org")))
   (add-hook 'org-agenda-mode-hook '(lambda () (hl-line-mode 1)))
   (setq
+   org-hide-emphasis-markers t
    calendar-week-start-day 1 ;; start week on monday
    org-default-notes-file  (concat org-directory "org/" "Inbox.org")
    org-default-work-file   (concat org-directory "org/" "work.org")
@@ -536,6 +538,32 @@
 ;;   :config
 ;;   (setq conda-env-autoactivate-mode t)
 ;; )
+;;
+;;
+
+;; Completion configuration
+;
+;;
+;; TODO: Think about this configuration
+;; (use-package! company
+;;   :after lsp-mode
+;;   :hook (lsp-mode . company-mode)
+;;   :bind (:map company-active-map
+;;          ("<tab>" . company-complete-selection))
+;;         (:map lsp-mode-map
+;;          ("<tab>" . company-indent-or-complete-common))
+;;   :custom
+;;   (company-minimum-prefix-length 1)
+;;   (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+;; Rainbow delimiters
+(use-package! rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+
 (after! python
 (add-hook 'python-mode-hook 'conda-env-autoactivate-mode)
 (add-hook 'python-mode-hook 'pyvenv-mode)
@@ -550,3 +578,28 @@
 
 (use-package! python-black
   :after python)
+
+(after! lsp-mode
+  :config
+  (
+   setq lsp-headerline-breadcrumb-enable t
+        lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
+  )
+  )
+
+(use-package! lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :hook (lsp-mode . lsp-ui-doc-mode)
+  :config
+  (setq lsp-ui-sideline-show-diagnostics t
+        lsp-ui-sideline-show-hover nil
+        lsp-ui-sideline-show-code-action t
+        lsp-ui-doc-use-childframe nil
+  )
+  :custom
+  (lsp-ui-doc-position 'bottom)
+
+)
+
+(use-package! lsp-treemacs
+  :after lsp)

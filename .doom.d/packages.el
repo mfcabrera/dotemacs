@@ -67,3 +67,7 @@
 
 (package! pyvenv)
 (package! python-black)
+
+
+(package! company-box)
+(package! lsp-treemacs)
