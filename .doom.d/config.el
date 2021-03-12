@@ -185,6 +185,7 @@
    ;; this makes ivy works properly on refile
    ;; https://github.com/abo-abo/swiper/issues/1254
    org-outline-path-complete-in-steps nil
+   org-goto-interface 'outline-path-completion
    )
   ;; make latex formulas larger
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
@@ -197,6 +198,8 @@
         ("w" "Todo - Work" entry (file+headline  org-default-work-file "Misc Tasks")
          "* TODO %?\n SCHEDULED:%t\n  %i\n")
         ("v" "Talk to Watch" entry (file+headline  org-default-learning-file "Talks and Conference Video Queue")
+         "* %a\n %i  " :immediate-finish 1)
+        ("p" "Paper / Article to read" entry (file+headline  org-default-learning-file "Paper Queue")
          "* %a\n %i  " :immediate-finish 1)
         ("T" "Todo (with link)" entry (file+headline  org-default-notes-file "TASKS")
          "* TODO %?\n SCHEDULED:%t\n  %a\n %i\n")
