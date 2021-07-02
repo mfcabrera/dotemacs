@@ -71,3 +71,7 @@
 
 (package! company-box)
 (package! lsp-treemacs)
+
+
+(package! auctex)
+(package! cdlatex)

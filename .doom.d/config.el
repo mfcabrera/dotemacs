@@ -182,10 +182,6 @@
    org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-columns-default-format-for-agenda "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-agenda-inhibit-startup nil
-   ;; this makes ivy works properly on refile
-   ;; https://github.com/abo-abo/swiper/issues/1254
-   org-outline-path-complete-in-steps nil
-   org-goto-interface 'outline-path-completion
    )
   ;; make latex formulas larger
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
@@ -262,7 +258,11 @@
   (setq
    org-refile-targets (quote ((org-agenda-files :maxlevel . 5) (nil :maxlevel . 5)))
    org-refile-use-outline-path (quote file) ; Targets start with the file name - allows creating level 1 tasks
-   org-outline-path-complete-in-steps t ; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
+  ;; this makes ivy works properly on refile
+   ;; https://github.com/abo-abo/swiper/issues/1254
+   org-outline-path-complete-in-steps nil ; was t before
+   org-goto-interface 'outline-path-completion
+
    )
 
 
@@ -318,9 +318,10 @@
                         (quote ((agenda time-up priority-down tag-up))))
                        (org-deadline-warning-days 3)))
            (tags-todo "REFILE")
-           (tags-todo "next")
+           (tags-todo "next"
+                      ((org-agenda-sorting-strategy '(priority-down)))
+                      )
            (tags "PROJECT-@work+current")
-           (tags "Q4")
            )
 
           ((org-agenda-tag-filter-preset '("-@work")) )
@@ -492,6 +493,7 @@
    bibtex-completion-bibliography "~/Dropbox/bibliography/references.bib"
    bibtex-completion-library-path "~/Users/mcabrera/Library/Application Support/Mendeley Desktop/Downloaded/"
    bibtex-completion-notes-path "~/Dropbox/Notational Data/helm-bibtex-notes.org"
+   ;; org-ref-bib-html "<h2 class='org-ref-bib'>References</h2>\n"
 
    )
   )
@@ -606,3 +608,11 @@
 
 (use-package! lsp-treemacs
   :after lsp)
+
+(use-package! windmove
+  ;; :defer 4
+  :config
+  ;; use command key on Mac
+  (windmove-default-keybindings 'super)
+  ;; wrap around at edges
+  (setq windmove-wrap-around t))
