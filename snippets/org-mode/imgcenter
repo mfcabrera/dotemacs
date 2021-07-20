@@ -3,8 +3,8 @@
 # key: imgcenter
 # binding: direct-keybinding
 # --
-#+BEGIN_HTML
+#+BEGIN_EXPORT html
 <div class="img-center">
 <img src="$0"  class="img-polaroid"  /> 
 </div>
-#+END_HTML
+#+END_EXPORT

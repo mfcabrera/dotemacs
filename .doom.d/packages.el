@@ -75,3 +75,7 @@
 
 (package! auctex)
 (package! cdlatex)
+
+
+;; crux!
+(package! crux)
