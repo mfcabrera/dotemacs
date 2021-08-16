@@ -133,14 +133,15 @@
 (after! yasnippet
   :config
   (setq
-   yas-snippet-dirs (append yas-snippet-dirs '("~/dotemacs/snippets/"))
+   yas-snippet-dirs (append yas-snippet-dirs '("~/devsetup/dotemacs/snippets"))
    yas-global-mode t
    )
 )
 
-;; Python related stuff
-(setq ANACONDA-PYTHON (mac-or-linux "/usr/local/anaconda3/bin/python" "~/anaconda3/bin/python"))
 
+
+;; Python related stuff
+;; (setq ANACONDA-PYTHON (mac-or-linux "/opt/homebrew/Caskroom/miniconda/base/bin/python" "~/anaconda3/bin/python"))
 ;; (use-package! elpy
 ;;   :init
 ;;   (elpy-enable)
@@ -153,6 +154,7 @@
 ;;    elpy-rpc-python-command ANACONDA-PYTHON
 ;;    )
 ;;   )
+
 
 (after! flycheck
   :config
@@ -489,34 +491,32 @@
    org-ref-bibliography-notes "~/Dropbox/Notational Data/biblio-notes.org"
    org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
    org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/"
-   org-ref-get-pdf-filename-function #'org-ref-get-mendeley-filename
+   bibtex-completion-library-path "~/Dropbox/bibliography/bibtex-pdfs"
    bibtex-completion-bibliography "~/Dropbox/bibliography/references.bib"
-   bibtex-completion-library-path "~/Users/mcabrera/Library/Application Support/Mendeley Desktop/Downloaded/"
-   bibtex-completion-notes-path "~/Dropbox/Notational Data/helm-bibtex-notes.org"
+   org-ref-get-pdf-filename-function #'org-ref-get-mendeley-filename
+   ; bibtex-completion-notes-path "~/Dropbox/Notational Data/helm-bibtex-notes.org"
    ;; org-ref-bib-html "<h2 class='org-ref-bib'>References</h2>\n"
-
    )
   )
-(setq bibtex-completion-pdf-open-function
-  (lambda (fpath)
-    (start-process "open" "*open*" "open" fpath)))
+;; (setq bibtex-completion-pdf-open-function
+;;  (lambda (fpath)
+;;    (start-process "open" "*open*" "open" fpath)))
 
 
-;; org-roam-bibtext
+;; ;; org-roam-bibtext
 (use-package! org-roam-bibtex
-  :after org-roam
-  :hook (org-roam-mode . org-roam-bibtex-mode)
-  :config
-  (setq orb-templates
-      '(("r" "reference" plain (function org-roam-capture--get-point)
-         "%?"
-         :file-name "references/${citekey}"
-         :head "#+title: ${title}
-#+roam_key: ${ref}
-#+roam_tags: ${type}
-- source :: ${ref}"
-         :unnarrowed t)))
-
+    :after org-roam
+    :hook (org-roam-mode . org-roam-bibtex-mode)
+    :config
+    (setq orb-templates
+        '(("r" "reference" plain (function org-roam-capture--get-point)
+           "%?"
+           :file-name "references/${citekey}"
+           :head "#+title: ${title}
+  #+roam_key: ${ref}
+  #+roam_tags: ${type}
+  - source :: ${ref}"
+           :unnarrowed t)))
 )
 
 ;; fancy priorities
@@ -539,12 +539,14 @@
 )
 
 
-;; (use-package! conda
-;;   :config
-;;   (setq conda-env-autoactivate-mode t)
-;; )
-;;
-;;
+;; Conda configuration
+
+(use-package! conda
+  :config
+  (setq conda-anaconda-home (mac-or-linux "/opt/homebrew/Caskroom/miniconda/base" "~/anaconda3/")
+
+   )
+  )
 
 ;; Completion configuration
 ;
@@ -561,7 +563,7 @@
 ;;   (company-minimum-prefix-length 1)
 ;;   (company-idle-delay 0.0))
 
-(use-package company-box
+(use-package! company-box
   :hook (company-mode . company-box-mode))
 
 ;; Rainbow delimiters
