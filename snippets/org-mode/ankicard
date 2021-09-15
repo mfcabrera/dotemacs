@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: ankicard
+# key: ankicard
+# binding: direct-keybinding
+# --
+** ${2:Question}
+:PROPERTIES:
+:ANKI_DECK: ${1:$$(yas-choose-value '(" Default" " DSInterviews" " MLEng"))}
+:ANKI_NOTE_TYPE: Basic-e882b
+:END:
+
+*** Front
+$2
+*** Back
+$3
