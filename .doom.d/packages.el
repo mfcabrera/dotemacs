@@ -84,3 +84,4 @@
 
 ;; anki-editor to create cards from Emacs
 (package! anki-editor)
+(package! shadowenv)

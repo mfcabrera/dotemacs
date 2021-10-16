@@ -618,3 +618,11 @@
   (windmove-default-keybindings 'super)
   ;; wrap around at edges
   (setq windmove-wrap-around t))
+
+
+;; Shadowenv for shopify stuff
+;;
+;;
+(use-package! shadowenv
+  :hook (after-init . shadowenv-global-mode)
+  )
