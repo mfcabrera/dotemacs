@@ -103,6 +103,8 @@
  standard-indent 8
  visible-bell t
  show-paren-style 'expression ;; show the whole expression
+ ;; The default hi-yellow was not very visible to me to I remmoved from the list
+ hi-lock-face-defaults  '("hi-pink" "hi-green" "hi-blue" "hi-salmon" "hi-aquamarine" "hi-black-b" "hi-blue-b" "hi-red-b" "hi-green-b" "hi-black-hb")
 )
 
 (setq NOTES-DIRECTORY org-directory)
@@ -297,15 +299,16 @@
         ("w" "Things to do at Work"
          (
           (tags  "PROJECT+current+@work")
+          (tags  "next+@work")
           (tags  "reading+@work")
-          (tags-todo  "+@work+type=\"Bug\""  )
+;;          (tags-todo  "+@work+type=\"Bug\""  )
           (agenda "Work" ((org-agenda-span 'day)
                       (org-agenda-files org-default-work-files)
                       (org-agenda-sorting-strategy
                        (quote ((agenda time-up priority-down tag-up) )))
                       (org-deadline-warning-days 3)
                       ))
-          (tags-todo "email+@work")
+;;          (tags-todo "email+@work")
           )
 
          )
@@ -543,7 +546,7 @@
 
 (use-package! conda
   :config
-  (setq conda-anaconda-home (mac-or-linux "/opt/homebrew/Caskroom/miniconda/base" "~/anaconda3/")
+  (setq conda-anaconda-home (mac-or-linux "/usr/local/Caskroom/miniconda/base" "~/anaconda3/")
 
    )
   )
