@@ -186,6 +186,7 @@
    org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-columns-default-format-for-agenda "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-agenda-inhibit-startup nil
+   ;; org-stuck-projects    ("+PROJECT"  ("TODO")  "next" "")
    )
   ;; make latex formulas larger
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
@@ -301,8 +302,7 @@
           (tags  "PROJECT+current+@work")
           (tags  "next+@work")
           (tags  "reading+@work")
-;;          (tags-todo  "+@work+type=\"Bug\""  )
-          (agenda "Work" ((org-agenda-span 'day)
+          (agenda "Work" ((org-agenda-span '3)
                       (org-agenda-files org-default-work-files)
                       (org-agenda-sorting-strategy
                        (quote ((agenda time-up priority-down tag-up) )))
