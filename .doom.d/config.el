@@ -413,52 +413,51 @@
 
 ;; ORG-ROAM
 (use-package! org-roam
-  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
-  :hook
-  (after-init . org-roam-mode)
   :init
   ;; some of this is already setup by org-roam plugin
-  (map! :leader
-        :prefix "n"
-        :desc "org-roam-find-file" "f" #'org-roam-find-file
-        :desc "org-roam-insert" "i" #'org-roam-insert
-        :desc "org-roam-capture" "c" #'org-roam-capture)
+  ;; (map! :leader
+  ;;       :prefix "n"
+  ;;       :desc "org-roam-node-find" "f" #'org-roam-node-find
+  ;;       :desc "org-roam-node-insert" "i" #'org-roam-node-insert
+  ;;       :desc "org-roam-capture" "c" #'org-roam-capture)
   (setq org-roam-directory org-directory
         org-roam-db-gc-threshold most-positive-fixnum
         org-roam-graph-exclude-matcher '("private" "repeaters" "dailies")
         org-roam-tag-sources '(prop last-directory)
         org-id-link-to-org-use-id t
-        org-roam-index-file "index.org"
-        org-roam-link-title-format "R:%s")
-  (setq org-roam-capture-templates '(
-                                   ("d" "default"
-                                    plain #'org-roam-capture--get-point
-                                    "%?" :file-name "%<%Y%m%d%H%M%S>-${slug}"
-                                    :head "#+title: ${title}  "
-                                    :unnarrowed t)
+        org-roam-index-file "index.org")
+        ; org-roam-link-title-format "R:%s")
+;;   (setq org-roam-capture-templates '(
+;;                                    ("d" "default"
+;;                                     plain #'org-roam-capture--get-point
+;;                                     "%?" :file-name "%<%Y%m%d%H%M%S>-${slug}"
+;;                                     :head "#+title: ${title}  "
+;;                                     :unnarrowed t)
 
-                                   ("p" "private" plain (function org-roam-capture--get-point)
-                                    "%?"
-                                    :file-name "private/${slug}"
-                                    :head "#+title: ${title}\n"
-                                    :unnarrowed t)
+;;                                    ("p" "private" plain (function org-roam-capture--get-point)
+;;                                     "%?"
+;;                                     :file-name "private/${slug}"
+;;                                     :head "#+title: ${title}\n"
+;;                                     :unnarrowed t)
 
-                                   ("c" "concept" plain (function org-roam--capture-get-point)
-                                    "%?"
-                                    :file-name "concepts/${slug}"
-                                    :head " #+title: ${title}\n - tags :: "
-                                    :unnarrowed t))
+;;                                    ("c" "concept" plain (function org-roam--capture-get-point)
+;;                                     "%?"
+;;                                     :file-name "concepts/${slug}"
+;;                                     :head " #+title: ${title}\n - tags :: "
+;;                                     :unnarrowed t))
 
-        )
-  (setq org-roam-capture-ref-templates
-      '(("r" "reference" plain (function org-roam-capture--get-point)
-         "%?"
-         :file-name "references/${slug}"
-         :head "#+title: ${title}
-#+roam_key: ${ref}
-#+roam_tags: website
-- source :: ${ref}"
-         :unnarrowed t))))
+;;         )
+;;   (setq org-roam-capture-ref-templates
+;;       '(("r" "reference" plain (function org-roam-capture--get-point)
+;;          "%?"
+;;          :file-name "references/${slug}"
+;;          :head "#+title: ${title}
+;; #+roam_key: ${ref}
+;; #+roam_tags: website
+;; - source :: ${ref}"
+;;          :unnarrowed t)))
+
+  )
 
 
 ;; org-journal
@@ -507,20 +506,20 @@
 
 
 ;; ;; org-roam-bibtext
-(use-package! org-roam-bibtex
-    :after org-roam
-    :hook (org-roam-mode . org-roam-bibtex-mode)
-    :config
-    (setq orb-templates
-        '(("r" "reference" plain (function org-roam-capture--get-point)
-           "%?"
-           :file-name "references/${citekey}"
-           :head "#+title: ${title}
-  #+roam_key: ${ref}
-  #+roam_tags: ${type}
-  - source :: ${ref}"
-           :unnarrowed t)))
-)
+;; (use-package! org-roam-bibtex
+;;     :after org-roam
+;;     :hook (org-roam-mode . org-roam-bibtex-mode)
+;;     :config
+;;     (setq orb-templates
+;;         '(("r" "reference" plain (function org-roam-capture--get-point)
+;;            "%?"
+;;            :file-name "references/${citekey}"
+;;            :head "#+title: ${title}
+;;   #+roam_key: ${ref}
+;;   #+roam_tags: ${type}
+;;   - source :: ${ref}"
+;;            :unnarrowed t)))
+;; )
 
 ;; fancy priorities
 (use-package! org-fancy-priorities
@@ -629,3 +628,11 @@
 (use-package! shadowenv
   :hook (after-init . shadowenv-global-mode)
   )
+
+
+(use-package! vulpea
+;;  :ensure t
+;; hook int org-roam-db-autosync-mode you wish to enable
+;; persistence of meta values (see respective section in README to
+;; find out what meta means)
+)
