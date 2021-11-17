@@ -626,8 +626,9 @@
 ;;
 ;;
 (use-package! shadowenv
+  :if (memq window-system '(mac ns))
   :hook (after-init . shadowenv-global-mode)
-  )
+)
 
 
 (use-package! vulpea
