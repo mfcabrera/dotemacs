@@ -64,9 +64,9 @@
 (package! editorconfig)
 
 ;; dash docs
-(package! dash-docs)
+;; (package! dash-docs)
 
-(package! pyvenv)
+;; (package! pyvenv)
 (package! python-black)
 
 
