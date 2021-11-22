@@ -414,12 +414,13 @@
 ;; ORG-ROAM
 (use-package! org-roam
   :init
-  ;; some of this is already setup by org-roam plugin
-  ;; (map! :leader
-  ;;       :prefix "n"
-  ;;       :desc "org-roam-node-find" "f" #'org-roam-node-find
-  ;;       :desc "org-roam-node-insert" "i" #'org-roam-node-insert
-  ;;       :desc "org-roam-capture" "c" #'org-roam-capture)
+  ;; Override a couple of keybinding to have quicker access to things
+  (map! :leader
+        :prefix "n"
+        :desc "org-roam-node-find" "f" #'org-roam-node-find ;originnaly mapped to find-file-in-notes
+        :desc "org-roam-node-insert" "i" #'org-roam-node-insert ;; originally not mapped
+        )
+  :config
   (setq org-roam-directory org-directory
         org-roam-db-gc-threshold most-positive-fixnum
         org-roam-graph-exclude-matcher '("private" "repeaters" "dailies")
@@ -427,35 +428,23 @@
         org-id-link-to-org-use-id t
         org-roam-index-file "index.org")
         ; org-roam-link-title-format "R:%s")
-;;   (setq org-roam-capture-templates '(
-;;                                    ("d" "default"
-;;                                     plain #'org-roam-capture--get-point
-;;                                     "%?" :file-name "%<%Y%m%d%H%M%S>-${slug}"
-;;                                     :head "#+title: ${title}  "
-;;                                     :unnarrowed t)
+  (setq org-roam-capture-templates '(
+                                  ("d" "default" plain "%?"
+                                   :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                      "#+title: ${title}\n")
+                                   :unnarrowed t)
+                                  ("c" "concept" plain "%?"
+                                   :target (file+head "concepts/${slug}.org"
+                                                      "#+title: ${title}\n")
+                                   :unnarrowed t)
 
-;;                                    ("p" "private" plain (function org-roam-capture--get-point)
-;;                                     "%?"
-;;                                     :file-name "private/${slug}"
-;;                                     :head "#+title: ${title}\n"
-;;                                     :unnarrowed t)
+                                ("r" "ref" plain "%?" :target
+                                 (file+head "references/${slug}.org"
+                                            "#+title: ${title}")
+                                 :unnarrowed t))
 
-;;                                    ("c" "concept" plain (function org-roam--capture-get-point)
-;;                                     "%?"
-;;                                     :file-name "concepts/${slug}"
-;;                                     :head " #+title: ${title}\n - tags :: "
-;;                                     :unnarrowed t))
 
-;;         )
-;;   (setq org-roam-capture-ref-templates
-;;       '(("r" "reference" plain (function org-roam-capture--get-point)
-;;          "%?"
-;;          :file-name "references/${slug}"
-;;          :head "#+title: ${title}
-;; #+roam_key: ${ref}
-;; #+roam_tags: website
-;; - source :: ${ref}"
-;;          :unnarrowed t)))
+        )
 
   )
 
@@ -464,8 +453,7 @@
 (after! org-journal
   :config
   (setq
-
-   org-journal-file-header  "#+TITLE: Monthly Journal\n#+STARTUP: folded"
+   org-journal-file-header  "#+title: Monthly Journal\n#+STARTUP: folded"
    org-journal-file-format "%Y-%m.org"
    org-journal-dir "~/Dropbox/Notational Data/journal/"
    org-journal-date-format "%A, %d %B %Y"
@@ -535,10 +523,10 @@
   (setq magit-git-global-arguments (remove "--literal-pathspecs" magit-git-global-arguments))
 )
 
-(use-package! dash-docs
-  :config
-  (setq dash-docs-common-docsets '("Pandas" "Python 3"))
-)
+;; (use-package! dash-docs
+;;   :config
+;;   (setq dash-docs-common-docsets '("Pandas" "Python 3"))
+;; )
 
 
 ;; Conda configuration
