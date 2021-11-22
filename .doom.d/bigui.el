@@ -106,3 +106,15 @@ If FILEXT is provided, return files with extension FILEXT instead."
         (progn (kill-new branch)
                (insert branch " "))
       (user-error "There is not current branch"))))
+
+;;;###autoload
+(defun bigui/nikola ()
+  "Runs a nikola command. Or run the passed command if no command was selected"
+  (declare (interactive-only compile))
+  (interactive)
+  (let* ((prefix "/usr/local/Caskroom/miniconda/base/envs/nikola/bin/nikola ")
+         (list (mapcar (lambda (str)
+                        (concat prefix str))
+                      '("build" "clean" "deploy")))
+        (cmd (completing-read "nikola command: " list  nil nil prefix 'compile-history)))
+    (compile cmd t)))
