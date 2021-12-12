@@ -88,3 +88,6 @@
 
 ;; org-v2 migration
 (package! vulpea)
+
+;; org-mac-link was removed from org config
+(package! org-mac-link)

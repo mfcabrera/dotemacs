@@ -118,3 +118,14 @@ If FILEXT is provided, return files with extension FILEXT instead."
                       '("build" "clean" "deploy")))
         (cmd (completing-read "nikola command: " list  nil nil prefix 'compile-history)))
     (compile cmd t)))
+
+;; org-roam functionality
+(defun bigui/org-id-update-org-roam-files ()
+  "Update Org-ID locations for all Org-roam files."
+  (interactive)
+  (org-id-update-id-locations (org-roam-list-files)))
+
+(defun bigui/org-id-update-id-current-file ()
+  "Scan the current buffer for Org-ID locations and update them."
+  (interactive)
+  (org-id-update-id-locations (list (buffer-file-name (current-buffer)))))

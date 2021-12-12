@@ -224,6 +224,7 @@
 
   (add-to-list 'org-modules 'org-habit)
   (add-to-list 'org-modules 'org-checklist)
+  ;; (add-to-list 'org-modules 'mac-link)
 
   ;; some custom faces
   (setq org-todo-keyword-faces
@@ -241,7 +242,7 @@
 
   (setq org-todo-keywords
         '((sequence "TODO" "IN-PROGRESS" "|"  "DONE" )))
-  (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META" "NEXT" "crypt" "desparche" "writing" "reading"))
+  (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META" "NEXT" "crypt" "desparche" "writing" "reading" "area"))
   (setq org-enforce-todo-dependencies t)
   (setq org-agenda-skip-deadline-if-done t)
 
@@ -300,7 +301,7 @@
         ("w" "Things to do at Work"
          (
           (tags  "PROJECT+current+@work")
-          (tags  "next+@work")
+          (tags  "next+@work/TODO|WAITING")
           (tags  "reading+@work")
           (agenda "Work" ((org-agenda-span '3)
                       (org-agenda-files org-default-work-files)
@@ -323,7 +324,7 @@
                         (quote ((agenda time-up priority-down tag-up))))
                        (org-deadline-warning-days 3)))
            (tags-todo "REFILE")
-           (tags-todo "next"
+           (tags "next/TODO|WAITING|STARTED"
                       ((org-agenda-sorting-strategy '(priority-down)))
                       )
            (tags "PROJECT-@work+current")
@@ -409,7 +410,8 @@
   (setq org-download-screenshot-method (mac-or-linux "/usr/sbin/screencapture -i %s"  "gnome-screenshot"))
   :hook
   (dired-mode . org-download-enable)
-)
+  )
+
 
 ;; ORG-ROAM
 (use-package! org-roam
@@ -421,13 +423,13 @@
         :desc "org-roam-node-insert" "i" #'org-roam-node-insert ;; originally not mapped
         )
   :config
+  (org-roam-db-autosync-enable)
   (setq org-roam-directory org-directory
-        org-roam-db-gc-threshold most-positive-fixnum
         org-roam-graph-exclude-matcher '("private" "repeaters" "dailies")
-        org-roam-tag-sources '(prop last-directory)
-        org-id-link-to-org-use-id t
-        org-roam-index-file "index.org")
-        ; org-roam-link-title-format "R:%s")
+        ; org-id-link-to-org-use-id t
+        ;org-roam-index-file "index.org"
+        org-roam-node-display-template "${doom-hierarchy:*} ${tags:45}"
+)
   (setq org-roam-capture-templates '(
                                   ("d" "default" plain "%?"
                                    :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
@@ -441,33 +443,30 @@
                                 ("r" "ref" plain "%?" :target
                                  (file+head "references/${slug}.org"
                                             "#+title: ${title}")
-                                 :unnarrowed t))
+                                 :unnarrowed t)))
 
-
-        )
-
-  )
+)
 
 
 ;; org-journal
-(after! org-journal
-  :config
-  (setq
-   org-journal-file-header  "#+title: Monthly Journal\n#+STARTUP: folded"
-   org-journal-file-format "%Y-%m.org"
-   org-journal-dir "~/Dropbox/Notational Data/journal/"
-   org-journal-date-format "%A, %d %B %Y"
-   org-journal-enable-agenda-integration t
-   org-journal-file-type 'monthly
- )
-)
-(defun org-journal-save-entry-and-exit()
-  "Simple convenience function.
-  Saves the buffer of the current day's entry and kills the window
-  Similar to org-capture like behavior"
-  (interactive)
-  (save-buffer)
-  (kill-buffer-and-window))
+;; (after! org-journal
+;;   :config
+;;   ((setq var )
+;;    ;org-journal-file-header  "#+title: Monthly Journal\n#+STARTUP: folded"
+;;    org-journal-file-format "%Y-%m.org"
+;;    org-journal-dir "~/Dropbox/Notational Data/journal/"
+;;    org-journal-date-format "%A, %d %B %Y"
+;;    org-journal-enable-agenda-integration t
+;;    org-journal-file-type 'monthly
+;;  )
+;; )
+;; (defun org-journal-save-entry-and-exit()
+;;   "Simple convenience function.
+;;   Saves the buffer of the current day's entry and kills the window
+;;   Similar to org-capture like behavior"
+;;   (interactive)
+;;   (save-buffer)
+;;   (kill-buffer-and-window))
 ;(define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
 
 ;;;;;;;;;
