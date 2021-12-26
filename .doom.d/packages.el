@@ -52,12 +52,9 @@
 
 (package! elpy) ;; Elpy - additional python stuff
 ;; org add-ons
-(package! org-roam-server)
 (package! org-ref)
 (package! org-roam-bibtex)
-  ;; :pin "563cd8ff5ffac4c67b50d08be4bdf85d94285986"
-  ;; :recipe (:host github :repo "org-roam/org-roam-bibtex"))
-;(unpin! org-roam company-org-roam)
+
 (package! org-fancy-priorities)
 
 ;; support for editorconfig
@@ -81,7 +78,6 @@
 ;; crux!
 (package! crux)
 
-
 ;; anki-editor to create cards from Emacs
 (package! anki-editor)
 (package! shadowenv)
@@ -91,3 +87,8 @@
 
 ;; org-mac-link was removed from org config
 (package! org-mac-link)
+
+
+;; org-roam ui
+(unpin! org-roam)
+(package! org-roam-ui)
