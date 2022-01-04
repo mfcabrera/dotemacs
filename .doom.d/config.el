@@ -186,7 +186,7 @@
    org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-columns-default-format-for-agenda "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-agenda-inhibit-startup nil
-   ;; org-stuck-projects    ("+PROJECT"  ("TODO")  "next" "")
+   org-id-locations-file (expand-file-name ".orgids" "~")
    )
   ;; make latex formulas larger
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
