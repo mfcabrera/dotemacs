@@ -415,21 +415,16 @@
 
 ;; ORG-ROAM
 (use-package! org-roam
-  :init
-  ;; Override a couple of keybinding to have quicker access to things
+  :config
+  (setq org-roam-directory org-directory
+        org-roam-graph-exclude-matcher '("private" "repeaters" "dailies")
+        org-roam-node-display-template "${doom-hierarchy:*} ${tags:45}"
+        )
   (map! :leader
         :prefix "n"
         :desc "org-roam-node-find" "f" #'org-roam-node-find ;originnaly mapped to find-file-in-notes
         :desc "org-roam-node-insert" "i" #'org-roam-node-insert ;; originally not mapped
-        )
-  :config
-  (org-roam-db-autosync-enable)
-  (setq org-roam-directory org-directory
-        org-roam-graph-exclude-matcher '("private" "repeaters" "dailies")
-        ; org-id-link-to-org-use-id t
-        ;org-roam-index-file "index.org"
-        org-roam-node-display-template "${doom-hierarchy:*} ${tags:45}"
-)
+  )
   (setq org-roam-capture-templates '(
                                   ("d" "default" plain "%?"
                                    :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
