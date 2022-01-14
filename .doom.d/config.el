@@ -68,8 +68,20 @@
 (setq doom-theme 'doom-dracula)
 
 ;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Dropbox/Notational Data/")
+;; change `org-directory'. It must be set before org loads! Chaged this to a
+;; real path instead of a symbolic link as it was making roam not to work
+;; properly
+(setq org-directory   (mac-or-linux "~/PersonalDrive/org-notes"  "~/GDrive/org-notes"))
+
+;; Variable display-buffer-base-action. It’s a list functions to control the
+;; display-buffer function, which Org-roam also uses (not directly but
+;; internally). It seems to be the more recent way replacing pop-up-windows
+;; above. It’s a list ordered by preference, and I set it to this. With this, my
+;; Org-roam buffer behaves as you would like it to (replacing an existing “main”
+;; window, not popping up a new window). I don’t know if Doom has any influence
+;; on it.
+(setq display-buffer-base-action  '((display-buffer-reuse-window display-buffer-use-some-window)))
+
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
