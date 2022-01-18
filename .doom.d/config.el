@@ -71,7 +71,8 @@
 ;; change `org-directory'. It must be set before org loads! Chaged this to a
 ;; real path instead of a symbolic link as it was making roam not to work
 ;; properly
-(setq org-directory   (mac-or-linux "~/PersonalDrive/org-notes"  "~/GDrive/org-notes"))
+(setq cloud-drive-dir   (mac-or-linux "~/PersonalDrive/"  "~/GDrive/"))
+(setq org-directory   (mac-or-linux "~/PersonalDrive/org-notes/"  "~/GDrive/org-notes/"))
 
 ;; Variable display-buffer-base-action. It’s a list functions to control the
 ;; display-buffer function, which Org-roam also uses (not directly but
@@ -185,7 +186,7 @@
 ;; your life in plain text
 ;;
 (after! org
-  (setq org-agenda-files (append (bigui/find-org-file-recursively "~/Dropbox/Notational Data/org/" "org")))
+  (setq org-agenda-files (append (bigui/find-org-file-recursively (concat org-directory "org/")  "org")))
   (add-hook 'org-agenda-mode-hook '(lambda () (hl-line-mode 1)))
   (setq
    org-hide-emphasis-markers t
@@ -228,7 +229,7 @@
            SCHEDULED:%t\n
            [[message://%l][Email]]
          " :immediate-finish 1)
-        ("b" "Idea forBlog" entry (file+headline "~/Dropbox/Notational Data/blog-ideas.org.txt" "Ideas")
+        ("b" "Idea forBlog" entry (file+headline (concat org-directory "blog-ideas.org.txt") "Ideas")
          "* %?\n %i")
         )
       )
@@ -418,7 +419,7 @@
 
 (use-package! org-download
   :config
-  (setq-default org-download-image-dir "~/Dropbox/org-images/")
+  (setq-default org-download-image-dir (concat cloud-drive-dir  "org-images/"))
   (setq org-download-screenshot-method (mac-or-linux "/usr/sbin/screencapture -i %s"  "gnome-screenshot"))
   :hook
   (dired-mode . org-download-enable)
@@ -455,7 +456,7 @@
 )
 
 
-;; org-journal
+;; org-journal - disabling for now using org-roam dailies
 ;; (after! org-journal
 ;;   :config
 ;;   ((setq var )
@@ -483,12 +484,12 @@
 (after! org-ref
   :config
   (setq
-   reftex-default-bibliography '("~/Dropbox/bibliography/references.bib")
-   org-ref-bibliography-notes "~/Dropbox/Notational Data/biblio-notes.org"
-   org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
-   org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/"
-   bibtex-completion-library-path "~/Dropbox/bibliography/bibtex-pdfs"
-   bibtex-completion-bibliography "~/Dropbox/bibliography/references.bib"
+   reftex-default-bibliography (concat cloud-drive-dir "bibliography/references.bib")
+   org-ref-bibliography-notes (concat cloud-drive-dir "bibliography/biblio-notes.org")
+   org-ref-default-bibliography '((concat cloud-drive-dir "bibliography/references.bib"))
+   org-ref-pdf-directory (concat cloud-drive-dir "bibliography/bibtex-pdfs/")
+   bibtex-completion-library-path (concat cloud-drive-dir "bibliography/bibtex-pdfs")
+   bibtex-completion-bibliography (concat cloud-drive-dir "bibliography/references.bib")
    org-ref-get-pdf-filename-function #'org-ref-get-mendeley-filename
    ; bibtex-completion-notes-path "~/Dropbox/Notational Data/helm-bibtex-notes.org"
    ;; org-ref-bib-html "<h2 class='org-ref-bib'>References</h2>\n"
@@ -500,20 +501,20 @@
 
 
 ;; ;; org-roam-bibtext
-;; (use-package! org-roam-bibtex
-;;     :after org-roam
-;;     :hook (org-roam-mode . org-roam-bibtex-mode)
-;;     :config
-;;     (setq orb-templates
-;;         '(("r" "reference" plain (function org-roam-capture--get-point)
-;;            "%?"
-;;            :file-name "references/${citekey}"
-;;            :head "#+title: ${title}
-;;   #+roam_key: ${ref}
-;;   #+roam_tags: ${type}
-;;   - source :: ${ref}"
-;;            :unnarrowed t)))
-;; )
+(use-package! org-roam-bibtex
+    :after org-roam
+    :hook (org-roam-mode . org-roam-bibtex-mode)
+    :config
+    (setq orb-templates
+        '(("r" "reference" plain (function org-roam-capture--get-point)
+           "%?"
+           :file-name "references/${citekey}"
+           :head "#+title: ${title}
+  #+roam_key: ${ref}
+  #+roam_tags: ${type}
+  - source :: ${ref}"
+           :unnarrowed t)))
+)
 
 ;; fancy priorities
 (use-package! org-fancy-priorities
@@ -559,8 +560,8 @@
 ;;   (company-minimum-prefix-length 1)
 ;;   (company-idle-delay 0.0))
 
-(use-package! company-box
-  :hook (company-mode . company-box-mode))
+;; (use-package! company-box
+;;   :hook (company-mode . company-box-mode))
 
 ;; Rainbow delimiters
 (use-package! rainbow-delimiters
