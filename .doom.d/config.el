@@ -421,6 +421,7 @@
   :config
   (setq-default org-download-image-dir (concat cloud-drive-dir  "org-images/"))
   (setq org-download-screenshot-method (mac-or-linux "/usr/sbin/screencapture -i %s"  "gnome-screenshot"))
+  (setq org-download-method 'Directory)
   :hook
   (dired-mode . org-download-enable)
   )
@@ -638,4 +639,5 @@
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+          org-roam-ui-open-on-start t)
+)
