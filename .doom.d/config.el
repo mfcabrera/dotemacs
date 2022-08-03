@@ -208,15 +208,15 @@
          (file+headline org-default-notes-file "Links")
          "* %a\n %?\n %i" :immediate-finish 1)
         ("t" "Todo" entry (file+headline  org-default-notes-file "TASKS")
-         "* TODO %?\n SCHEDULED:%t\n  %i\n")
+         "* TODO %?\n SCHEDULED: %t\n  %i\n")
         ("w" "Todo - Work" entry (file+headline  org-default-work-file "Misc Tasks")
-         "* TODO %?\n SCHEDULED:%t\n  %i\n")
+         "* TODO %?\n SCHEDULED: %t\n  %i\n")
         ("v" "Talk to Watch" entry (file+headline  org-default-learning-file "Talks and Conference Video Queue")
          "* %a\n %i  " :immediate-finish 1)
         ("p" "Paper / Article to read" entry (file+headline  org-default-learning-file "Paper Queue")
          "* %a\n %i  " :immediate-finish 1)
         ("T" "Todo (with link)" entry (file+headline  org-default-notes-file "TASKS")
-         "* TODO %?\n SCHEDULED:%t\n  %a\n %i\n")
+         "* TODO %?\n SCHEDULED: %t\n  %a\n %i\n")
         ("m" "Task from Email" entry
          (file+headline org-default-notes-file "Emails")
          "* TODO  %a  :email: \n
