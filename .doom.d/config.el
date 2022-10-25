@@ -39,6 +39,7 @@
       doom-big-font (font-spec :size 20)
       doom-unicode-font (font-spec :size (mac-or-linux 18 16))
       doom-modeline-major-mode-icon t
+      global-auto-revert-mode t
       )
 
 ;; Persist Emacs’ initial frame position, dimensions and/or full-screen state across sessions
@@ -419,7 +420,7 @@
 
 (use-package! org-download
   :config
-  (setq-default org-download-image-dir (concat cloud-drive-dir  "org-images/"))
+  (setq org-download-image-dir (concat cloud-drive-dir  "org-images/"))
   (setq org-download-screenshot-method (mac-or-linux "/usr/sbin/screencapture -i %s"  "gnome-screenshot"))
   (setq org-download-method 'Directory)
   :hook
@@ -432,7 +433,6 @@
   :config
   (setq org-roam-directory org-directory
         org-roam-graph-exclude-matcher '("private" "repeaters" "dailies")
-        org-roam-node-display-template "${doom-hierarchy:*} ${tags:45}"
         )
   (map! :leader
         :prefix "n"
