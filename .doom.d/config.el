@@ -421,8 +421,8 @@
 (use-package! org-download
   :config
   (setq org-download-image-dir (concat cloud-drive-dir  "org-images/"))
-  (setq org-download-screenshot-method (mac-or-linux "/usr/sbin/screencapture -i %s"  "gnome-screenshot"))
-  (setq org-download-method 'Directory)
+  ;; (setq org-download-screenshot-method (mac-or-linux "/usr/sbin/screencapture -i %s"  "gnome-screenshot"))
+  (setq org-download-method 'directory)
   :hook
   (dired-mode . org-download-enable)
   )
