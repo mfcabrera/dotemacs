@@ -293,8 +293,7 @@
       '(
 
         ("P" "Current Project List"
-         ( (tags "PROJECT+current")
-           )
+         ((tags "PROJECT+current" ))
          )
 
        ("Q" "Work current Project List"
@@ -329,14 +328,21 @@
          )
 
         ("h" "Personal things / Home"
-         ((tags-todo "+dailies+SCHEDULED<=\"<today>\"")
+         (
+          ;; ((org-super-agenda-groups 'nil))
+          (tags-todo "+dailies+SCHEDULED<=\"<today>\""  )
           (tags "+learning+current-@work")
-          (tags "reading")
-          (tags "writing")
-           (agenda "" ((org-agenda-span '3)
+          (tags "reading" ((org-super-agenda-groups 'nil)) )
+          (tags "writing" ((org-super-agenda-groups 'nil)) )
+           (agenda "" (
+                       (org-agenda-span '3)
                        (org-agenda-sorting-strategy
-                        (quote ((agenda time-up priority-down tag-up))))
-                       (org-deadline-warning-days 3)))
+                       (quote ((agenda time-up priority-down tag-up))))
+                       (org-deadline-warning-days 3)
+                       (org-super-agenda-groups '((:auto-category t)))
+                       )
+
+                   )
            (tags-todo "REFILE")
            (tags "next/TODO|WAITING|STARTED"
                       ((org-agenda-sorting-strategy '(priority-down)))
@@ -448,6 +454,20 @@
                                    :target (file+head "concepts/${slug}.org"
                                                       "#+title: ${title}\n")
                                    :unnarrowed t)
+                                  ("k" "education notes" plain "%?"
+                                   :target (file+head "course_notes/${slug}.org"
+                                                      "#+title: ${title}\n #+ROAM_REFS: {url} ")
+                                   :unnarrowed t)
+
+                                  ("b" "book notes" plain "%?"
+                                   :target (file+head "books/${slug}.org"
+                                                      "#+title: ${title}\n #+ROAM_REFS: {url} ")
+                                   :unnarrowed t)
+                                  ("l" "blog post or idea" plain "%?"
+                                   :target (file+head "blog/${slug}.org"
+                                                      "#+title: ${title}\n #+ROAM_REFS: {url} ")
+                                   :unnarrowed t)
+
 
                                 ("r" "ref" plain "%?" :target
                                  (file+head "references/${slug}.org"
@@ -455,6 +475,14 @@
                                  :unnarrowed t)))
 
 )
+
+(defun my/org-roam-capture-inbox ()
+  (interactive)
+  (org-roam-capture- :node (org-roam-node-create)
+                     :templates '(("i" "inbox" plain "** %?" :target (file+olp "org/Inbox.org" ("Misc Notes") )
+                                 ))))
+
+(global-set-key (kbd "C-c n b") #'my/org-roam-capture-inbox)
 
 
 ;; org-journal - disabling for now using org-roam dailies
@@ -489,7 +517,7 @@
    org-ref-bibliography-notes (concat cloud-drive-dir "bibliography/biblio-notes.org")
    org-ref-default-bibliography '((concat cloud-drive-dir "bibliography/references.bib"))
    org-ref-pdf-directory (concat cloud-drive-dir "bibliography/bibtex-pdfs/")
-   bibtex-completion-library-path (concat cloud-drive-dir "bibliography/bibtex-pdfs")
+   bibtex-completion-library-path (concat cloud-drive-dir "bibliography/bibtex-pdfs/")
    bibtex-completion-bibliography (concat cloud-drive-dir "bibliography/references.bib")
    org-ref-get-pdf-filename-function #'org-ref-get-mendeley-filename
    ; bibtex-completion-notes-path "~/Dropbox/Notational Data/helm-bibtex-notes.org"
@@ -641,3 +669,13 @@
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t)
 )
+
+;; Super agenda
+;;
+;;
+(use-package! org-super-agenda
+  :after org-agenda
+  :config
+  ;;  (setq org-super-agenda-groups 'nil)
+  (setq org-super-agenda-groups '((:auto-parent t)))
+  (org-super-agenda-mode))

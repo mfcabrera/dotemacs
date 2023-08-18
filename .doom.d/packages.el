@@ -97,3 +97,4 @@
 (package! rg)
 
 ; (package! forge)
+(package! org-super-agenda)
