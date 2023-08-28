@@ -679,3 +679,8 @@
   ;;  (setq org-super-agenda-groups 'nil)
   (setq org-super-agenda-groups '((:auto-parent t)))
   (org-super-agenda-mode))
+
+(use-package! org-mouse
+  :after org
+
+  )
