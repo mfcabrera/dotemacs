@@ -645,15 +645,6 @@
   ;; wrap around at edges
   (setq windmove-wrap-around t))
 
-
-;; Shadowenv for shopify stuff
-;;
-;;
-(use-package! shadowenv
-  :if (memq window-system '(mac ns))
-  :hook (after-init . shadowenv-global-mode)
-)
-
 (use-package! websocket
   :after org-roam)
 
