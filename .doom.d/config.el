@@ -255,8 +255,8 @@
   )
 
   (setq org-todo-keywords
-        '((sequence "TODO" "IN-PROGRESS" "|"  "DONE" )))
-  (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META" "NEXT" "crypt" "desparche" "writing" "reading" "area"))
+        '((sequence "TODO" "STARTED" "|"  "DONE" )))
+  (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META" "NEXT" "crypt" "desparche" "writing" "reading" "area" "chores"))
   (setq org-enforce-todo-dependencies t)
   (setq org-agenda-skip-deadline-if-done t)
 
@@ -347,7 +347,7 @@
            (tags "next/TODO|WAITING|STARTED"
                       ((org-agenda-sorting-strategy '(priority-down)))
                       )
-           (tags "PROJECT-@work+current")
+           (tags "PROJECT-@work+current" ((org-super-agenda-groups 'nil)))
            )
 
           ((org-agenda-tag-filter-preset '("-@work")) )
