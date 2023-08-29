@@ -252,6 +252,11 @@
         ("CANCELED"  . (:foreground "red" :weight bold))
         ("FAILED"  . (:foreground "red" :weight bold))
         )
+
+    ;; 4 priorities (HIGH, MEDIUM, NORMAL, LOW)
+    org-priority-highest ?A
+    org-priority-default ?C
+    org-priority-lowest  ?D
   )
 
   (setq org-todo-keywords
@@ -545,13 +550,19 @@
            :unnarrowed t)))
 )
 
+
 ;; fancy priorities
+;; inspired by https://github.com/JordanFaust/doom-config/blob/e6e0d7964bc6494d2740d5530456d87fabfa8c7c/snippets/%2Borg/base.el#L105
 (use-package! org-fancy-priorities
   :hook
   (org-mode . org-fancy-priorities-mode)
   :config
-  (setq org-fancy-priorities-list '("⚡" "⬆" "⬇" "☕")))
-
+  (setq org-fancy-priorities-list
+        `((?A . ,(propertize (format " %s [HIGH]" (all-the-icons-faicon "exclamation-circle" :v-adjust -0.01))))
+          (?B . ,(propertize (format " %s [MEDIUM]" (all-the-icons-faicon "arrow-circle-up" :v-adjust -0.01))))
+          (?C . ,(propertize (format " %s [NORMAL]" (all-the-icons-faicon "arrow-circle-down" :v-adjust -0.01))))
+          (?D . ,(propertize (format " %s [LOW]" (all-the-icons-faicon "question" :v-adjust -0.01))))))
+  )
 ;; this makes pre-commit hooks to work
 ;; extracted from https://github.com/magit/magit/issues/3419
 (use-package! magit
