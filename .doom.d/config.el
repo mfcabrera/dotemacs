@@ -234,6 +234,20 @@
          "* %?\n %i")
         )
       )
+  (setq org-tag-alist '(
+                      (:startgroup . nil)
+                      ("@work" . ?w)
+                      ("@home" . ?h)
+                      (:endgroup . nil)
+                      ("PROJECT" . ?p)
+                      ("current" . ?c)
+                      ("next" . ?n)
+                      ("reading" . ?r)
+                      ("errand" . ?e)
+                      ("chore" . ?o)
+
+                      )
+        )
 
 
   (add-to-list 'org-modules 'org-habit)
