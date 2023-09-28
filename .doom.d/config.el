@@ -189,6 +189,7 @@
 (after! org
   (setq org-agenda-files (append (bigui/find-org-file-recursively (concat org-directory "org/")  "org")))
   (add-hook 'org-agenda-mode-hook '(lambda () (hl-line-mode 1)))
+  (add-hook 'auto-save-hook 'org-save-all-org-buffers)
   (setq
    org-hide-emphasis-markers t
    calendar-week-start-day 1 ;; start week on monday
