@@ -246,7 +246,8 @@
                       ("reading" . ?r)
                       ("errand" . ?e)
                       ("chore" . ?o)
-
+                      ("learning" . ?l)
+                      ("viernes" . ?v)
                       )
         )
 
