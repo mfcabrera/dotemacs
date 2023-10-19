@@ -129,3 +129,8 @@ If FILEXT is provided, return files with extension FILEXT instead."
   "Scan the current buffer for Org-ID locations and update them."
   (interactive)
   (org-id-update-id-locations (list (buffer-file-name (current-buffer)))))
+
+(defun bigui/read-1pw-secret (secret)
+  "Read the output of the op command with the given PARAM and trim leading and trailing whitespace."
+  (let ((command (format "op read \"%s\"" secret)))
+    (string-trim (shell-command-to-string command))))

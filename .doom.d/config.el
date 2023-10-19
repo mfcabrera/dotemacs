@@ -702,3 +702,13 @@
   :after org
 
   )
+
+(setq sql-connection-alist
+      '((starrocks-dev (sql-product 'mysql)
+                  (sql-port 9030)
+                  (sql-server "8i6r5noyy.cloud-app.celerdata.com")
+                  (sql-user (bigui/read-1pw-secret "op://zmafg6a6xyu23mneangibytpha/development starrocks/username"))
+                  (sql-database "layer")
+                  (sql-password (bigui/read-1pw-secret "op://zmafg6a6xyu23mneangibytpha/development starrocks/password"))
+        ))
+)
