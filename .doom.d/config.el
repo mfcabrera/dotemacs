@@ -37,7 +37,7 @@
 (setq doom-font (font-spec :family "Hack" :size (mac-or-linux 18 16) )
       doom-variable-pitch-font (font-spec :family "Fira Sans") ; inherits `doom-font''s :size
       doom-big-font (font-spec :size 20)
-      doom-unicode-font (font-spec :size (mac-or-linux 18 16))
+      doom-symbol-font (font-spec :size (mac-or-linux 18 16))
       doom-modeline-major-mode-icon t
       global-auto-revert-mode t
       )
@@ -141,9 +141,27 @@
       deft-file-naming-rules '((noslash . "-")
                                (nospace . "-")
                                (case-fn . downcase))
+      deft-strip-summary-regexp
+      (concat "\\("
+	  "^:.+:.*\n" ; any line with a :SOMETHING:
+	  "\\|^#\\+.*\n" ; anyline starting with a #+
+	  "\\|^\\*.+.*\n" ; anyline where an asterisk starts the line
+	  "\\)")
 
      )
 )
+
+(advice-add 'deft-parse-title :override
+    (lambda (file contents)
+      (if deft-use-filename-as-title
+	  (deft-base-filename file)
+	(let* ((case-fold-search 't)
+	       (begin (string-match "title: " contents))
+	       (end-of-begin (match-end 0))
+	       (end (string-match "\n" contents begin)))
+	  (if begin
+	      (substring contents end-of-begin end)
+	    (format "%s" file))))))
 
 ;; Configure custom snippets
 (after! yasnippet
@@ -244,7 +262,7 @@
                       ("current" . ?c)
                       ("next" . ?n)
                       ("reading" . ?r)
-                      ("errand" . ?e)
+                      ("errands" . ?e)
                       ("chore" . ?o)
                       ("learning" . ?l)
                       ("viernes" . ?v)
@@ -507,29 +525,29 @@
 
 
 ;; org-journal - disabling for now using org-roam dailies
-;; (after! org-journal
-;;   :config
-;;   ((setq var )
-;;    ;org-journal-file-header  "#+title: Monthly Journal\n#+STARTUP: folded"
-;;    org-journal-file-format "%Y-%m.org"
-;;    org-journal-dir "~/Dropbox/Notational Data/journal/"
-;;    org-journal-date-format "%A, %d %B %Y"
-;;    org-journal-enable-agenda-integration t
-;;    org-journal-file-type 'monthly
-;;  )
-;; )
-;; (defun org-journal-save-entry-and-exit()
-;;   "Simple convenience function.
-;;   Saves the buffer of the current day's entry and kills the window
-;;   Similar to org-capture like behavior"
-;;   (interactive)
-;;   (save-buffer)
-;;   (kill-buffer-and-window))
-;(define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
+(after! org-journal
+  :config
+  (setq
+   ;org-journal-file-header  "#+title: Monthly Journal\n#+STARTUP: folded"
+   org-journal-file-format "%Y-%m.org"
+   org-journal-dir "~/PersonalDrive/org-notes/journal/"
+   org-journal-date-format "%A, %d %B %Y"
+   org-journal-enable-agenda-integration t
+   org-journal-file-type 'monthly
+ )
+)
+(defun org-journal-save-entry-and-exit()
+  "Simple convenience function.
+  Saves the buffer of the current day's entry and kills the window
+  Similar to org-capture like behavior"
+  (interactive)
+  (save-buffer)
+  (kill-buffer-and-window))
+(define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
 
 ;;;;;;;;;
 ;; org-ref and related packages
-;;;;;;;;;
+;; ;;;;;;;;;
 
 (after! org-ref
   :config
@@ -574,10 +592,10 @@
   (org-mode . org-fancy-priorities-mode)
   :config
   (setq org-fancy-priorities-list
-        `((?A . ,(propertize (format " %s [HIGH]" (all-the-icons-faicon "exclamation-circle" :v-adjust -0.01))))
-          (?B . ,(propertize (format " %s [MEDIUM]" (all-the-icons-faicon "arrow-circle-up" :v-adjust -0.01))))
-          (?C . ,(propertize (format " %s [NORMAL]" (all-the-icons-faicon "arrow-circle-down" :v-adjust -0.01))))
-          (?D . ,(propertize (format " %s [LOW]" (all-the-icons-faicon "question" :v-adjust -0.01))))))
+        `((?A . ,(propertize (format " %s [HIGH]" (nerd-icons-faicon "nf-fa-exclamation_circle" :v-adjust -0.01))))
+          (?B . ,(propertize (format " %s [MEDIUM]" (nerd-icons-faicon "nf-fa-arrow_circle_up" :v-adjust -0.01))))
+          (?C . ,(propertize (format " %s [NORMAL]" (nerd-icons-faicon "nf-fa-arrow_circle_down" :v-adjust -0.01))))
+          (?D . ,(propertize (format " %s [LOW]" (nerd-icons-faicon "nf-fa-circle_question" :v-adjust -0.01))))))
   )
 ;; this makes pre-commit hooks to work
 ;; extracted from https://github.com/magit/magit/issues/3419
@@ -593,13 +611,25 @@
 
 
 ;; Conda configuration
-
-(use-package! conda
+;;
+(use-package conda
+  :ensure t
+  :init
+  ;; Set the path to your Conda installation
+  (setq conda-anaconda-home "/opt/homebrew/Caskroom/miniconda/base")
+  ;; Set the home directory for Conda environments
+  (setq conda-env-home-directory "/opt/homebrew/Caskroom/miniconda/base")
+  ;; Automatically activate the base environment when opening a Python file
+  (setq conda-env-autoactivate-mode t)
   :config
-  (setq conda-anaconda-home (mac-or-linux "/usr/local/Caskroom/miniconda/base" "~/anaconda3/")
+  ;; Initialize Conda for shell and eshell
+  (conda-env-initialize-interactive-shells)
+  (conda-env-initialize-eshell))
 
-   )
-  )
+;; Optionally, set the default Conda environment
+(setq conda-env-default-location "/opt/homebrew/Caskroom/miniconda/base/envs")
+
+
 
 ;; Completion configuration
 ;
@@ -625,7 +655,6 @@
 
 
 (after! python
-(add-hook 'python-mode-hook 'conda-env-autoactivate-mode)
 (add-hook 'python-mode-hook 'pyvenv-mode)
 )
 
@@ -712,3 +741,11 @@
                   (sql-password (bigui/read-1pw-secret "op://zmafg6a6xyu23mneangibytpha/development starrocks/password"))
         ))
 )
+
+
+(use-package! gptel
+
+:config
+(setq gptel-default-mode 'org-mode)
+
+  )

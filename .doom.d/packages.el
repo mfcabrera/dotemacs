@@ -97,3 +97,6 @@
 
 ; (package! forge)
 (package! org-super-agenda)
+
+
+(package! gptel)
