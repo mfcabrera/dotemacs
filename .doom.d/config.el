@@ -34,10 +34,10 @@
 ;;
 ;;
 
-(setq doom-font (font-spec :family "Hack" :size (mac-or-linux 18 16) )
+(setq doom-font (font-spec :family "Hack" :size (mac-or-linux 16 16) )
       doom-variable-pitch-font (font-spec :family "Fira Sans") ; inherits `doom-font''s :size
       doom-big-font (font-spec :size 20)
-      doom-symbol-font (font-spec :size (mac-or-linux 18 16))
+      doom-unicode-font (font-spec :size (mac-or-linux 18 16))
       doom-modeline-major-mode-icon t
       global-auto-revert-mode t
       )
@@ -205,9 +205,14 @@
 ;; your life in plain text
 ;;
 (after! org
-  (setq org-agenda-files (append (bigui/find-org-file-recursively (concat org-directory "org/")  "org")))
+  (setq org-agenda-files (append
+                          (bigui/find-org-file-recursively (concat org-directory "org/")  "org")
+        (bigui/find-org-file-recursively (concat org-directory "area/")  "org")
+
+        ))
   (add-hook 'org-agenda-mode-hook '(lambda () (hl-line-mode 1)))
   (add-hook 'auto-save-hook 'org-save-all-org-buffers)
+  (add-hook 'org-agenda-mode-hook 'org-fancy-priorities-mode)
   (setq
    org-hide-emphasis-markers t
    calendar-week-start-day 1 ;; start week on monday
@@ -524,7 +529,15 @@
 (global-set-key (kbd "C-c n b") #'my/org-roam-capture-inbox)
 
 
-;; org-journal - disabling for now using org-roam dailies
+;; org-journal
+(defun org-journal-save-entry-and-exit()
+  "Simple convenience function.
+  Saves the buffer of the current day's entry and kills the window
+  Similar to org-capture like behavior"
+  (interactive)
+  (save-buffer)
+  (kill-buffer-and-window))
+
 (after! org-journal
   :config
   (setq
@@ -535,15 +548,9 @@
    org-journal-enable-agenda-integration t
    org-journal-file-type 'monthly
  )
+  (define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
 )
-(defun org-journal-save-entry-and-exit()
-  "Simple convenience function.
-  Saves the buffer of the current day's entry and kills the window
-  Similar to org-capture like behavior"
-  (interactive)
-  (save-buffer)
-  (kill-buffer-and-window))
-(define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
+
 
 ;;;;;;;;;
 ;; org-ref and related packages
@@ -590,13 +597,18 @@
 (use-package! org-fancy-priorities
   :hook
   (org-mode . org-fancy-priorities-mode)
+  (org-agenda-mode . org-fancy-priorities-mode)
   :config
   (setq org-fancy-priorities-list
         `((?A . ,(propertize (format " %s [HIGH]" (nerd-icons-faicon "nf-fa-exclamation_circle" :v-adjust -0.01))))
           (?B . ,(propertize (format " %s [MEDIUM]" (nerd-icons-faicon "nf-fa-arrow_circle_up" :v-adjust -0.01))))
           (?C . ,(propertize (format " %s [NORMAL]" (nerd-icons-faicon "nf-fa-arrow_circle_down" :v-adjust -0.01))))
           (?D . ,(propertize (format " %s [LOW]" (nerd-icons-faicon "nf-fa-circle_question" :v-adjust -0.01))))))
-  )
+)
+
+
+
+
 ;; this makes pre-commit hooks to work
 ;; extracted from https://github.com/magit/magit/issues/3419
 (use-package! magit
