@@ -761,3 +761,25 @@
 (setq gptel-default-mode 'org-mode)
 
   )
+
+;; let's star using avy
+;;
+(use-package! avy
+    :bind
+  (("C-c :" . avy-goto-char);; Jump to a specific character
+   ("C-c '" . avy-goto-char-timer) ;;
+   ("M-g f" . avy-goto-line)         ;; Jump to a specific line
+   ("M-g w" . avy-goto-word-1)
+
+
+   ))     ;; Jump to a word starting with a char
+(setq debug-on-error t)
+
+
+;; (use-package ellama
+;;   :init
+;;   (setopt ellama-language "English")
+;;   (require 'llm-ollama)
+;;   (setopt ellama-provider
+;; 		  (make-llm-ollama
+;; 		   :chat-model "codellama" :embedding-model "codellama")))
