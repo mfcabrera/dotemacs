@@ -100,3 +100,13 @@
 
 
 (package! gptel)
+(package! ellama)
+(package! mcp)
+
+
+(package! llm-tool-collection 
+ :recipe (:host github :repo "skissue/llm-tool-collection"))
+
+
+(package! claude-code
+  :recipe (:host github :repo "stevemolitor/claude-code.el"))

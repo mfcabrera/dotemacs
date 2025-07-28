@@ -67,6 +67,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-dracula)
+(setq doom-tokyo-night-brighter-comments t)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads! Chaged this to a
@@ -329,6 +330,13 @@
 
    )
 
+;; fix problem with
+(setq org-modern-fold-stars
+      '(("▶" . "▼")
+        ("▷" . "▽")
+        ("▸" . "▾")
+        ("▹" . "▿")
+        ("▸" . "▾")))
 
   ;; Custom commands!
   ;;
@@ -594,17 +602,17 @@
 
 ;; fancy priorities
 ;; inspired by https://github.com/JordanFaust/doom-config/blob/e6e0d7964bc6494d2740d5530456d87fabfa8c7c/snippets/%2Borg/base.el#L105
-(use-package! org-fancy-priorities
-  :hook
-  (org-mode . org-fancy-priorities-mode)
-  (org-agenda-mode . org-fancy-priorities-mode)
-  :config
-  (setq org-fancy-priorities-list
-        `((?A . ,(propertize (format " %s [HIGH]" (nerd-icons-faicon "nf-fa-exclamation_circle" :v-adjust -0.01))))
-          (?B . ,(propertize (format " %s [MEDIUM]" (nerd-icons-faicon "nf-fa-arrow_circle_up" :v-adjust -0.01))))
-          (?C . ,(propertize (format " %s [NORMAL]" (nerd-icons-faicon "nf-fa-arrow_circle_down" :v-adjust -0.01))))
-          (?D . ,(propertize (format " %s [LOW]" (nerd-icons-faicon "nf-fa-circle_question" :v-adjust -0.01))))))
-)
+;; (use-package! org-fancy-priorities
+;;   :hook
+;;   (org-mode . org-fancy-priorities-mode)
+;;   (org-agenda-mode . org-fancy-priorities-mode)
+;;   :config
+;;   (setq org-fancy-priorities-list
+;;         `((?A . ,(propertize (format " %s [HIGH]" (nerd-icons-faicon "nf-fa-exclamation_circle" :v-adjust -0.01))))
+;;           (?B . ,(propertize (format " %s [MEDIUM]" (nerd-icons-faicon "nf-fa-arrow_circle_up" :v-adjust -0.01))))
+;;           (?C . ,(propertize (format " %s [NORMAL]" (nerd-icons-faicon "nf-fa-arrow_circle_down" :v-adjust -0.01))))
+;;           (?D . ,(propertize (format " %s [LOW]" (nerd-icons-faicon "nf-fa-circle_question" :v-adjust -0.01))))))
+;; )
 
 
 
@@ -759,8 +767,41 @@
 
 :config
 (setq gptel-default-mode 'org-mode)
+(add-hook 'gptel-post-response-functions 'gptel-end-of-response)
 
-  )
+(setq gptel-directives
+      '((default . "You are a large language model living in Emacs and a helpful assistant. Respond concisely. You have tools available")
+
+        ;; Code & Development
+        (code-review . "You are a senior software engineer doing code review. Focus on bugs, performance, readability, and best practices. Be specific and constructive.")
+        (debug . "Help debug this code. Analyze the error, identify likely causes, and suggest specific fixes with explanations.")
+        (optimize . "Analyze this code for performance improvements. Suggest optimizations with benchmarking considerations and trade-offs.")
+        (architect . "Think like a software architect. Consider design patterns, scalability, maintainability, and system design principles.")
+
+        ;; Writing & Documentation
+        (technical-writer . "Write clear, precise technical documentation. Use examples, proper structure, and consider the audience's technical level.")
+        (editor . "Edit this text for clarity, conciseness, and flow. Fix grammar and suggest improvements while preserving meaning.")
+        (readme . "Help create or improve README files. Include clear setup instructions, usage examples, and proper formatting.")
+
+        ;; Learning & Research
+        (teacher . "Explain concepts step-by-step with examples. Start simple, build complexity gradually, and check understanding.")
+        (researcher . "Provide thorough research with multiple perspectives. Include sources, analyze trade-offs, and highlight key insights.")
+        (eli5 . "Explain like I'm 5, but for technical topics. Use analogies and simple language without losing accuracy.")
+
+        ;; Productivity & Analysis
+        (analyzer . "Break down complex problems systematically. Identify patterns, root causes, and actionable solutions.")
+        (planner . "Help organize and plan projects. Consider dependencies, timelines, resources, and potential roadblocks.")
+        (summarizer . "Create concise summaries highlighting key points, decisions, and action items.")
+
+        ;; Specialized
+        (emacs-helper . "You're an Emacs expert. Provide elisp solutions, package recommendations, and workflow optimizations.")
+        (shell-guru . "Help with command-line tasks, shell scripting, and Unix tools. Provide working examples and explain options.")
+        (git-assistant . "Help with Git workflows, resolving conflicts, and repository management. Suggest commands and best practices."))
+)
+
+)
+(require 'gptel-integrations)
+
 
 ;; let's star using avy
 ;;
@@ -783,3 +824,51 @@
 ;;   (setopt ellama-provider
 ;; 		  (make-llm-ollama
 ;; 		   :chat-model "codellama" :embedding-model "codellama")))
+;;
+
+
+(use-package! mcp
+  :ensure t
+  :after gptel
+  :custom
+  (mcp-hub-servers
+   `(
+     ;; Filesystem MCP
+     ("filesystem" . (:command "npx"
+                        :args ("-y" "@modelcontextprotocol/server-filesystem"
+                               "/Users/mfcabrera/Desktop"
+                               "/Users/mfcabrera/Downloads"
+                               "/Users/mfcabrera/PersonalDrive")))
+
+     ;; Memory MCP
+     ("memory" . (:command "npx"
+                    :args ("-y" "@modelcontextprotocol/server-memory")
+                    :env (:MEMORY_FILE_PATH "/Users/mfcabrera/PersonalDrive/memory.json")))
+
+     ;; Google Calendar MCP
+     ("google-calendar" . (:command "npx"
+                              :args ("@cocal/google-calendar-mcp")
+                              :env (:GOOGLE_OAUTH_CREDENTIALS "/Users/mfcabrera/PersonalDrive/secrets.json")))
+
+     ;; Linear MCP
+     ("linear" . (:command "npx"
+                    :args ("-y" "mcp-remote" "https://mcp.linear.app/sse")))
+     ))
+  :config
+  (require 'mcp-hub)
+  :hook
+  (after-init . mcp-hub-start-all-server))
+
+
+(use-package! llm-tool-collection)
+(mapcar (apply-partially #'apply #'gptel-make-tool)
+        (llm-tool-collection-get-all))
+
+
+(use-package! claude-code
+  :after transient
+  :config
+  (claude-code-mode)
+  (map! :leader
+        (:prefix ("c" . "claude")
+         :desc "Claude Command Map" "c" #'claude-code-transient)))
