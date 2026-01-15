@@ -107,6 +107,14 @@
 (package! llm-tool-collection 
  :recipe (:host github :repo "skissue/llm-tool-collection"))
 
+;; (package! claude-code
+;;   :recipe (:host github :repo "stevemolitor/claude-code.el"))
 
-(package! claude-code
-  :recipe (:host github :repo "stevemolitor/claude-code.el"))
+(package! claude-code-ide
+  :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
+
+(package! vterm)
+
+(package! rainbow-delimiters)
+
+(package! khoj)

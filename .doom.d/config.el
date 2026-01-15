@@ -767,8 +767,8 @@
 
 :config
 (setq gptel-default-mode 'org-mode)
+;; Configure OpenAI backend with GPT-5 models
 (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
-
 (setq gptel-directives
       '((default . "You are a large language model living in Emacs and a helpful assistant. Respond concisely. You have tools available")
 
@@ -859,16 +859,41 @@
   :hook
   (after-init . mcp-hub-start-all-server))
 
-
 (use-package! llm-tool-collection)
 (mapcar (apply-partially #'apply #'gptel-make-tool)
         (llm-tool-collection-get-all))
 
 
-(use-package! claude-code
-  :after transient
+;; (use-package! claude-code
+;;   :after transient
+;;   :config
+;;   (claude-code-mode)
+;;   (map! :leader
+;;         (:prefix ("c" . "claude")
+;;          :desc "Claude Command Map" "c" #'claude-code-transient)))
+
+
+(use-package! claude-code-ide
+  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
   :config
-  (claude-code-mode)
-  (map! :leader
-        (:prefix ("c" . "claude")
-         :desc "Claude Command Map" "c" #'claude-code-transient)))
+  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+
+;; Disable Ctrl + Mouse Wheel from zooming
+(global-unset-key (kbd "C-<mouse-4>"))  ;; Unbind zoom-in (scroll-up)
+(global-unset-key (kbd "C-<mouse-5>"))  ;; Unbind zoom-out (scroll-down)
+(global-unset-key (kbd "C-<wheel-up>"))  ;; Alternative binding for some systems
+(global-unset-key (kbd "C-<wheel-down>"))  ;; Alternative binding for some systems
+
+
+
+
+
+
+;; Install Khoj client using Straight.el
+(use-package! khoj
+  :after org
+  :bind ("C-c k" . 'khoj)
+  :config (setq khoj-api-key "kk-5nEhLbGN_VERn2ZtT7zV8hXZ3zDjpASl42FAFfii0do"
+                khoj-server-url "https://app.khoj.dev"
+                khoj-org-directories '("/Users/mfcabrera/PersonalDrive/org-notes")
+                khoj-org-files '("~/docs/todo.org" "~/docs/work.org")))
