@@ -83,9 +83,11 @@ If FILEXT is provided, return files with extension FILEXT instead."
 	    (add-to-list 'org-file-list file-or-dir))
         )
        ((file-directory-p file-or-dir)
-	(dolist (org-file (bigui/find-org-file-recursively file-or-dir filext)
-			  org-file-list) ; add files found to result
-	  (add-to-list 'org-file-list org-file)))))))
+        ;; Skip blog directory - blog posts are projects but not in daily agenda
+        (unless (string-match-p "/blog/?$" file-or-dir)
+	  (dolist (org-file (bigui/find-org-file-recursively file-or-dir filext)
+			    org-file-list) ; add files found to result
+	    (add-to-list 'org-file-list org-file))))))))
 
 ;; extract the path from terminal (MAC OSX fix)
 (defun bigui/set-exec-path-from-shell-PATH ()

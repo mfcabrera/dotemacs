@@ -113,6 +113,9 @@
 (package! claude-code-ide
   :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
 
+;; Required for claude-code-ide MCP tools server (emacs-tools)
+(package! web-server)
+
 (package! vterm)
 
 (package! rainbow-delimiters)

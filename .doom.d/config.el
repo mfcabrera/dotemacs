@@ -207,20 +207,20 @@
 ;;
 (after! org
   (setq org-agenda-files (append
-                          (bigui/find-org-file-recursively (concat org-directory "org/")  "org")
-        (bigui/find-org-file-recursively (concat org-directory "area/")  "org")
-
-        ))
+                          (bigui/find-org-file-recursively (concat org-directory "inbox/") "org")
+                          (bigui/find-org-file-recursively (concat org-directory "projects/") "org")
+                          (bigui/find-org-file-recursively (concat org-directory "areas/") "org")
+                          ))
   (add-hook 'org-agenda-mode-hook '(lambda () (hl-line-mode 1)))
   (add-hook 'auto-save-hook 'org-save-all-org-buffers)
   (add-hook 'org-agenda-mode-hook 'org-fancy-priorities-mode)
   (setq
    org-hide-emphasis-markers t
    calendar-week-start-day 1 ;; start week on monday
-   org-default-notes-file  (concat org-directory "org/" "Inbox.org")
-   org-default-work-file   (concat org-directory "org/" "work.org")
+   org-default-notes-file  (concat org-directory "inbox/" "Inbox.org")
+   org-default-work-file   (concat org-directory "areas/" "work.org")
    org-default-work-files   (list org-default-work-file)
-   org-default-learning-file  (concat org-directory "org/" "learning_profdev.org")
+   org-default-learning-file  (concat org-directory "areas/" "learning_profdev.org")
    org-startup-folded 't
    org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
    org-columns-default-format-for-agenda "%25ITEM %TODO %3PRIORITY %TAGS %Effort"
@@ -230,31 +230,27 @@
   ;; make latex formulas larger
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
   (setq org-capture-templates
-      '(("l" "Link" entry
-         (file+headline org-default-notes-file "Links")
-         "* %a\n %?\n %i" :immediate-finish 1)
-        ("t" "Todo" entry (file+headline  org-default-notes-file "TASKS")
+      '(("t" "Todo" entry (file+headline  org-default-notes-file "TASKS")
          "* TODO %?\n SCHEDULED: %t\n  %i\n")
         ("w" "Todo - Work" entry (file+headline  org-default-work-file "Misc Tasks")
          "* TODO %?\n SCHEDULED: %t\n  %i\n")
-        ("v" "Talk to Watch" entry (file+headline  org-default-learning-file "Talks and Conference Video Queue")
-         "* %a\n %i  " :immediate-finish 1)
-        ("p" "Paper / Article to read" entry (file+headline  org-default-learning-file "Paper Queue")
+        ("p" "Paper / Article / Video to read" entry (file+headline  org-default-learning-file "Reading Backlog")
          "* %a\n %i  " :immediate-finish 1)
         ("T" "Todo (with link)" entry (file+headline  org-default-notes-file "TASKS")
          "* TODO %?\n SCHEDULED: %t\n  %a\n %i\n")
-        ("m" "Task from Email" entry
-         (file+headline org-default-notes-file "Emails")
-         "* TODO  %a  :email: \n
-           SCHEDULED:%t\n
-           [[message://%l][Email]]
-         " :immediate-finish 1)
-        ("x" "Work task from Email" entry
-         (file+headline org-default-work-file "Emails")
-         "* TODO  %a  :email: \n
-           SCHEDULED:%t\n
-           [[message://%l][Email]]
-         " :immediate-finish 1)
+        ;; Email capture templates - disabled (no longer using email integration)
+        ;; ("m" "Task from Email" entry
+        ;;  (file+headline org-default-notes-file "Emails")
+        ;;  "* TODO  %a  :email: \n
+        ;;    SCHEDULED:%t\n
+        ;;    [[message://%l][Email]]
+        ;;  " :immediate-finish 1)
+        ;; ("x" "Work task from Email" entry
+        ;;  (file+headline org-default-work-file "Emails")
+        ;;  "* TODO  %a  :email: \n
+        ;;    SCHEDULED:%t\n
+        ;;    [[message://%l][Email]]
+        ;;  " :immediate-finish 1)
         ("b" "Idea forBlog" entry (file+headline (concat org-directory "blog-ideas.org.txt") "Ideas")
          "* %?\n %i")
         )
@@ -301,7 +297,7 @@
 
   (setq org-todo-keywords
         '((sequence "TODO" "STARTED" "|"  "DONE" )))
-  (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META" "NEXT" "crypt" "desparche" "writing" "reading" "area" "chores"))
+  (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "parked2026" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META" "NEXT" "crypt" "desparche" "writing" "reading" "area" "chores"))
   (setq org-enforce-todo-dependencies t)
   (setq org-agenda-skip-deadline-if-done t)
 
@@ -366,6 +362,8 @@
         ("w" "Things to do at Work"
          (
           (tags  "PROJECT+current+@work")
+          (tags  "linear/TODO|STARTED" ((org-agenda-overriding-header "Linear Issues")))
+          (tags  "linear+PROJECT" ((org-agenda-overriding-header "Linear Projects")))
           (tags  "next+@work/TODO|WAITING")
           (tags  "reading+@work")
           (agenda "Work" ((org-agenda-span '3)
@@ -400,6 +398,7 @@
                       ((org-agenda-sorting-strategy '(priority-down)))
                       )
            (tags "PROJECT-@work+current" ((org-super-agenda-groups 'nil)))
+           (tags "PROJECT-@work+parked2026" ((org-super-agenda-groups 'nil)))
            )
 
           ((org-agenda-tag-filter-preset '("-@work")) )
@@ -499,31 +498,43 @@
   )
   (setq org-roam-capture-templates '(
                                   ("d" "default" plain "%?"
-                                   :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                   :target (file+head "resources/zettelkasten/%<%Y%m%d%H%M%S>-${slug}.org"
                                                       "#+title: ${title}\n")
                                    :unnarrowed t)
                                   ("c" "concept" plain "%?"
-                                   :target (file+head "concepts/${slug}.org"
+                                   :target (file+head "resources/concepts/${slug}.org"
                                                       "#+title: ${title}\n")
                                    :unnarrowed t)
                                   ("k" "education notes" plain "%?"
-                                   :target (file+head "course_notes/${slug}.org"
+                                   :target (file+head "resources/courses/${slug}.org"
                                                       "#+title: ${title}\n #+ROAM_REFS: {url} ")
                                    :unnarrowed t)
 
                                   ("b" "book notes" plain "%?"
-                                   :target (file+head "books/${slug}.org"
+                                   :target (file+head "resources/books/${slug}.org"
                                                       "#+title: ${title}\n #+ROAM_REFS: {url} ")
                                    :unnarrowed t)
                                   ("l" "blog post or idea" plain "%?"
-                                   :target (file+head "blog/${slug}.org"
+                                   :target (file+head "projects/blog/${slug}.org"
                                                       "#+title: ${title}\n #+ROAM_REFS: {url} ")
                                    :unnarrowed t)
 
 
                                 ("r" "ref" plain "%?" :target
-                                 (file+head "references/${slug}.org"
+                                 (file+head "resources/references/${slug}.org"
                                             "#+title: ${title}")
+                                 :unnarrowed t)
+
+                                ("m" "meeting note" plain
+                                 "* Attendees\n%?\n\n* Agenda\n\n* Discussion\n\n* Action Items\n- [ ] \n\n* Follow-up\n"
+                                 :target (file+head "resources/zettelkasten/%<%Y%m%d%H%M%S>-meeting-${slug}.org"
+                                                    "#+title: Meeting: ${title}\n#+filetags: :meeting:\n#+date: %<%Y-%m-%d>\n")
+                                 :unnarrowed t)
+
+                                ("t" "talk/conference" plain
+                                 "* Speaker\n%?\n\n* Key Takeaways\n- \n\n* Notes\n\n* Resources\n"
+                                 :target (file+head "resources/talks/%<%Y%m%d>-${slug}.org"
+                                                    "#+title: ${title}\n#+filetags: :talk:\n#+date: %<%Y-%m-%d>\n#+roam_refs: \n")
                                  :unnarrowed t)))
 
 )
@@ -531,7 +542,7 @@
 (defun my/org-roam-capture-inbox ()
   (interactive)
   (org-roam-capture- :node (org-roam-node-create)
-                     :templates '(("i" "inbox" plain "** %?" :target (file+olp "org/Inbox.org" ("Misc Notes") )
+                     :templates '(("i" "inbox" plain "** %?" :target (file+olp "inbox/Inbox.org" ("Misc Notes") )
                                  ))))
 
 (global-set-key (kbd "C-c n b") #'my/org-roam-capture-inbox)
@@ -551,7 +562,7 @@
   (setq
    ;org-journal-file-header  "#+title: Monthly Journal\n#+STARTUP: folded"
    org-journal-file-format "%Y-%m.org"
-   org-journal-dir "~/PersonalDrive/org-notes/journal/"
+   org-journal-dir "~/PersonalDrive/org-notes/archive/journal/"
    org-journal-date-format "%A, %d %B %Y"
    org-journal-enable-agenda-integration t
    org-journal-file-type 'monthly
@@ -864,6 +875,23 @@
         (llm-tool-collection-get-all))
 
 
+
+;; Install Khoj client using Straight.el
+(use-package! khoj
+  :after org
+  :bind ("C-c k" . 'khoj)
+  :config (setq khoj-api-key "kk-5nEhLbGN_VERn2ZtT7zV8hXZ3zDjpASl42FAFfii0do"
+                khoj-server-url "https://app.khoj.dev"
+                khoj-org-directories '("/Users/mfcabrera/PersonalDrive/org-notes/inbox"
+                                       "/Users/mfcabrera/PersonalDrive/org-notes/projects"
+                                       "/Users/mfcabrera/PersonalDrive/org-notes/areas"
+                                       "/Users/mfcabrera/PersonalDrive/org-notes/resources")
+                khoj-org-files '("~/docs/todo.org" "~/docs/work.org")))
+
+
+
+
+
 ;; (use-package! claude-code
 ;;   :after transient
 ;;   :config
@@ -876,7 +904,90 @@
 (use-package! claude-code-ide
   :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
   :config
-  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+  (claude-code-ide-emacs-tools-setup) ; Optionally enable Emacs MCP tools
+  (setq claude-code-ide-enable-mcp-server t)
+
+  ;; ============================================================
+  ;; Agenda MCP Tools for Claude Code
+  ;; ============================================================
+  (defun my/mcp-agenda-view (key)
+    "Generate agenda view KEY and return as string."
+    (require 'org-agenda)
+    (let ((org-agenda-buffer-name "*MCP-Agenda*")
+          (org-agenda-sticky nil))
+      (org-agenda nil key)
+      (with-current-buffer org-agenda-buffer-name
+        (let ((content (buffer-string)))
+          (kill-buffer)
+          content))))
+
+  (defun my/mcp-agenda-home ()
+    "Return home agenda as string."
+    (my/mcp-agenda-view "h"))
+
+  (defun my/mcp-agenda-work ()
+    "Return work agenda as string."
+    (my/mcp-agenda-view "w"))
+
+  (defun my/mcp-agenda-daily ()
+    "Return daily agenda as string."
+    (my/mcp-agenda-view "D"))
+
+  ;; Register as MCP tools
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "getAgendaHome"
+                :function #'my/mcp-agenda-home
+                :description "Get personal/home org-agenda view (excludes work items)"
+                :args nil))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "getAgendaWork"
+                :function #'my/mcp-agenda-work
+                :description "Get work org-agenda view (Linear issues, work projects, next actions)"
+                :args nil))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "getAgendaDaily"
+                :function #'my/mcp-agenda-daily
+                :description "Get daily action list (emails, dailies, today only)"
+                :args nil))
+
+  ;; Khoj semantic search MCP tool
+  (defun my/mcp-khoj-search (query)
+    "Search org-notes via Khoj semantic search.
+Returns search results as a formatted string."
+    (require 'khoj)
+    ;; url-build-query-string expects ((key value) ...) not ((key . value) ...)
+    (let* ((params `((q ,query)
+                     (t "org")
+                     (n 10)
+                     (r "true")))
+           (response (khoj--call-api "/api/search" "GET" params)))
+      (if response
+          (mapconcat
+           (lambda (item)
+             (let ((entry (alist-get 'entry item))
+                   (file (alist-get 'file item))
+                   (score (alist-get 'score item)))
+               (format "## %s (score: %.2f)\n%s\n"
+                       (or file "unknown")
+                       (or score 0)
+                       (or entry ""))))
+           response
+           "\n---\n")
+        "No results found")))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "khojSearch"
+                :function #'my/mcp-khoj-search
+                :description "Semantic search over org-notes using Khoj AI. Use for finding related notes, concepts, or answering questions about the knowledge base."
+                :args '((:name "query"
+                         :type string
+                         :description "Natural language search query")))))
 
 ;; Disable Ctrl + Mouse Wheel from zooming
 (global-unset-key (kbd "C-<mouse-4>"))  ;; Unbind zoom-in (scroll-up)
@@ -884,16 +995,3 @@
 (global-unset-key (kbd "C-<wheel-up>"))  ;; Alternative binding for some systems
 (global-unset-key (kbd "C-<wheel-down>"))  ;; Alternative binding for some systems
 
-
-
-
-
-
-;; Install Khoj client using Straight.el
-(use-package! khoj
-  :after org
-  :bind ("C-c k" . 'khoj)
-  :config (setq khoj-api-key "kk-5nEhLbGN_VERn2ZtT7zV8hXZ3zDjpASl42FAFfii0do"
-                khoj-server-url "https://app.khoj.dev"
-                khoj-org-directories '("/Users/mfcabrera/PersonalDrive/org-notes")
-                khoj-org-files '("~/docs/todo.org" "~/docs/work.org")))
