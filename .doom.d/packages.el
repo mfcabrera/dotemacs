@@ -120,4 +120,4 @@
 
 (package! rainbow-delimiters)
 
-(package! khoj)
+(package! markdown-mermaid)

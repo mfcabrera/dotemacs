@@ -876,21 +876,6 @@
 
 
 
-;; Install Khoj client using Straight.el
-(use-package! khoj
-  :after org
-  :bind ("C-c k" . 'khoj)
-  :config (setq khoj-api-key "kk-5nEhLbGN_VERn2ZtT7zV8hXZ3zDjpASl42FAFfii0do"
-                khoj-server-url "https://app.khoj.dev"
-                khoj-org-directories '("/Users/mfcabrera/PersonalDrive/org-notes/inbox"
-                                       "/Users/mfcabrera/PersonalDrive/org-notes/projects"
-                                       "/Users/mfcabrera/PersonalDrive/org-notes/areas"
-                                       "/Users/mfcabrera/PersonalDrive/org-notes/resources")
-                khoj-org-files '("~/docs/todo.org" "~/docs/work.org")))
-
-
-
-
 
 ;; (use-package! claude-code
 ;;   :after transient
@@ -955,39 +940,31 @@
                 :description "Get daily action list (emails, dailies, today only)"
                 :args nil))
 
-  ;; Khoj semantic search MCP tool
-  (defun my/mcp-khoj-search (query)
-    "Search org-notes via Khoj semantic search.
-Returns search results as a formatted string."
-    (require 'khoj)
-    ;; url-build-query-string expects ((key value) ...) not ((key . value) ...)
-    (let* ((params `((q ,query)
-                     (t "org")
-                     (n 10)
-                     (r "true")))
-           (response (khoj--call-api "/api/search" "GET" params)))
-      (if response
-          (mapconcat
-           (lambda (item)
-             (let ((entry (alist-get 'entry item))
-                   (file (alist-get 'file item))
-                   (score (alist-get 'score item)))
-               (format "## %s (score: %.2f)\n%s\n"
-                       (or file "unknown")
-                       (or score 0)
-                       (or entry ""))))
-           response
-           "\n---\n")
-        "No results found")))
+  
+  ;; Revert org buffers MCP tool
+  (defun my/mcp-revert-org-buffers ()
+    "Revert all org-mode buffers that are visiting files.
+Returns a summary of reverted buffers."
+    (let ((reverted '()))
+      (dolist (buf (buffer-list))
+        (when (and (buffer-file-name buf)
+                   (string-suffix-p ".org" (buffer-file-name buf))
+                   (file-exists-p (buffer-file-name buf)))
+          (with-current-buffer buf
+            (revert-buffer t t t)
+            (push (buffer-name buf) reverted))))
+      (if reverted
+          (format "Reverted %d org buffer(s): %s"
+                  (length reverted)
+                  (string-join reverted ", "))
+        "No org buffers to revert.")))
 
   (add-to-list 'claude-code-ide-mcp-server-tools
                (claude-code-ide-make-tool
-                :name "khojSearch"
-                :function #'my/mcp-khoj-search
-                :description "Semantic search over org-notes using Khoj AI. Use for finding related notes, concepts, or answering questions about the knowledge base."
-                :args '((:name "query"
-                         :type string
-                         :description "Natural language search query")))))
+                :name "revertOrgBuffers"
+                :function #'my/mcp-revert-org-buffers
+                :description "Revert all open org-mode buffers to their on-disk state. Call this after editing org files externally."
+                :args nil)))
 
 ;; Disable Ctrl + Mouse Wheel from zooming
 (global-unset-key (kbd "C-<mouse-4>"))  ;; Unbind zoom-in (scroll-up)
