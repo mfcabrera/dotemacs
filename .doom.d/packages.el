@@ -55,8 +55,6 @@
 (package! org-ref)
 (package! org-roam-bibtex)
 
-(package! org-fancy-priorities)
-
 ;; support for editorconfig
 (package! editorconfig)
 
@@ -67,7 +65,6 @@
 (package! python-black)
 
 
-(package! company-box)
 (package! lsp-treemacs)
 
 

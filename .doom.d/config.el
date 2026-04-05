@@ -213,7 +213,6 @@
                           ))
   (add-hook 'org-agenda-mode-hook '(lambda () (hl-line-mode 1)))
   (add-hook 'auto-save-hook 'org-save-all-org-buffers)
-  (add-hook 'org-agenda-mode-hook 'org-fancy-priorities-mode)
   (setq
    org-hide-emphasis-markers t
    calendar-week-start-day 1 ;; start week on monday
@@ -268,6 +267,7 @@
                       ("chore" . ?o)
                       ("learning" . ?l)
                       ("viernes" . ?v)
+                      ("today" . ?t)
                       )
         )
 
@@ -611,19 +611,6 @@
 )
 
 
-;; fancy priorities
-;; inspired by https://github.com/JordanFaust/doom-config/blob/e6e0d7964bc6494d2740d5530456d87fabfa8c7c/snippets/%2Borg/base.el#L105
-;; (use-package! org-fancy-priorities
-;;   :hook
-;;   (org-mode . org-fancy-priorities-mode)
-;;   (org-agenda-mode . org-fancy-priorities-mode)
-;;   :config
-;;   (setq org-fancy-priorities-list
-;;         `((?A . ,(propertize (format " %s [HIGH]" (nerd-icons-faicon "nf-fa-exclamation_circle" :v-adjust -0.01))))
-;;           (?B . ,(propertize (format " %s [MEDIUM]" (nerd-icons-faicon "nf-fa-arrow_circle_up" :v-adjust -0.01))))
-;;           (?C . ,(propertize (format " %s [NORMAL]" (nerd-icons-faicon "nf-fa-arrow_circle_down" :v-adjust -0.01))))
-;;           (?D . ,(propertize (format " %s [LOW]" (nerd-icons-faicon "nf-fa-circle_question" :v-adjust -0.01))))))
-;; )
 
 
 
@@ -964,7 +951,110 @@ Returns a summary of reverted buffers."
                 :name "revertOrgBuffers"
                 :function #'my/mcp-revert-org-buffers
                 :description "Revert all open org-mode buffers to their on-disk state. Call this after editing org files externally."
-                :args nil)))
+                :args nil))
+
+  ;; Org-roam database sync
+  (defun my/mcp-org-roam-db-sync ()
+    "Sync the org-roam database. Call after creating new org files with :ID: properties."
+    (require 'org-roam)
+    (org-roam-db-sync)
+    "org-roam database synced successfully.")
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "orgRoamDbSync"
+                :function #'my/mcp-org-roam-db-sync
+                :description "Sync the org-roam SQLite database. Call this after creating or modifying org files with :ID: properties so that org-roam links resolve correctly."
+                :args nil))
+
+  ;; Open file in Emacs
+  (defun my/mcp-open-file (file-path)
+    "Open FILE-PATH in Emacs and return confirmation."
+    (if (file-exists-p file-path)
+        (progn
+          (find-file file-path)
+          (format "Opened %s" file-path))
+      (format "Error: file not found: %s" file-path)))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "openFileInEmacs"
+                :function #'my/mcp-open-file
+                :description "Open a file in Emacs. Useful for triggering org-roam indexing of new files, or navigating the user to a specific file."
+                :args '((:name "file_path" :type string :description "Absolute path to the file to open"))))
+
+  ;; Org-roam find node by title (search)
+  (defun my/mcp-org-roam-find-node (query)
+    "Search org-roam nodes matching QUERY and return top results."
+    (require 'org-roam)
+    (let* ((nodes (org-roam-node-list))
+           (matches (seq-filter
+                     (lambda (node)
+                       (string-match-p (regexp-quote query)
+                                       (org-roam-node-title node)))
+                     nodes))
+           (results (seq-take matches 10)))
+      (if results
+          (mapconcat
+           (lambda (node)
+             (format "- %s [id:%s] (%s)"
+                     (org-roam-node-title node)
+                     (org-roam-node-id node)
+                     (org-roam-node-file node)))
+           results "\n")
+        (format "No nodes found matching '%s'" query))))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "orgRoamSearch"
+                :function #'my/mcp-org-roam-find-node
+                :description "Search org-roam nodes by title. Returns matching node titles, IDs, and file paths. Useful for finding existing notes before creating links."
+                :args '((:name "query" :type string :description "Search string to match against node titles"))))
+
+  ;; Org-agenda redo (refresh all agenda views)
+  (defun my/mcp-org-agenda-redo ()
+    "Refresh all open org-agenda buffers."
+    (let ((count 0))
+      (dolist (buf (buffer-list))
+        (when (and (buffer-live-p buf)
+                   (with-current-buffer buf
+                     (derived-mode-p 'org-agenda-mode)))
+          (with-current-buffer buf
+            (org-agenda-redo t)
+            (setq count (1+ count)))))
+      (if (> count 0)
+          (format "Refreshed %d agenda buffer(s)." count)
+        "No open agenda buffers found.")))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "orgAgendaRefresh"
+                :function #'my/mcp-org-agenda-redo
+                :description "Refresh all open org-agenda buffers. Call after modifying scheduled/deadline timestamps or TODO states."
+                :args nil))
+
+  ;; Anki: push notes from a specific org file to Anki via AnkiConnect
+  (defun my/mcp-anki-push-notes (file-path)
+    "Push all anki-editor notes in FILE-PATH to Anki.
+Requires Anki desktop to be running with AnkiConnect plugin."
+    (require 'anki-editor)
+    (let ((buf (find-file-noselect file-path)))
+      (with-current-buffer buf
+        (let ((count 0))
+          (org-map-entries
+           (lambda ()
+             (when (org-entry-get nil "ANKI_NOTE_TYPE")
+               (setq count (1+ count))))
+           nil 'file)
+          (anki-editor-push-notes)
+          (format "Pushed %d Anki note(s) from %s" count file-path)))))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "ankiPushNotes"
+                :function #'my/mcp-anki-push-notes
+                :description "Push anki-editor notes from an org file to Anki via AnkiConnect. Requires Anki desktop to be running with AnkiConnect plugin."
+                :args '((:name "file_path" :type string :description "Absolute path to the org file containing Anki cards")))))
 
 ;; Disable Ctrl + Mouse Wheel from zooming
 (global-unset-key (kbd "C-<mouse-4>"))  ;; Unbind zoom-in (scroll-up)
