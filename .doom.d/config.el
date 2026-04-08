@@ -539,6 +539,44 @@
 
 )
 
+;; org-web-tools: web clipper for LLM Knowledge Base pipeline
+;; Captures URL content as .org into resources/raw/ for later LLM ingest
+(use-package! org-web-tools
+  :commands (org-web-tools-read-url-as-org
+             org-web-tools-insert-link-for-url
+             org-web-tools-insert-web-page-as-entry)
+  :config
+  (defun my/org-web-tools-capture-to-raw (url)
+    "Capture URL content to resources/raw/ as an org file for the LLM wiki pipeline."
+    (interactive "sURL: ")
+    (let* ((timestamp (format-time-string "%Y%m%d%H%M%S"))
+           (content (org-web-tools--url-as-readable-org url))
+           (title (if (string-match "^\\*+ \\(.+\\)$" content)
+                      (match-string 1 content)
+                    "untitled"))
+           (slug (replace-regexp-in-string "[^a-zA-Z0-9]+" "-" (downcase title)))
+           (slug (string-trim slug "-" "-"))
+           (slug (if (> (length slug) 60) (substring slug 0 60) slug))
+           (filename (format "%s-%s.org" timestamp slug))
+           (filepath (expand-file-name filename
+                       (expand-file-name "resources/raw" org-roam-directory)))
+           (uuid (string-trim (shell-command-to-string "python3 -c \"import uuid; print(str(uuid.uuid4()))\""))))
+      (with-temp-file filepath
+        (insert (format ":PROPERTIES:\n:ID:       %s\n:END:\n" uuid))
+        (insert (format "#+title: %s\n" title))
+        (insert "#+filetags: :raw:\n")
+        (insert (format "#+date: %s\n" (format-time-string "[%Y-%m-%d %a]")))
+        (insert (format "#+roam_refs: %s\n\n" url))
+        (insert "* Source Content\n")
+        (insert (replace-regexp-in-string "^\\*" "**" content))
+        (insert "\n"))
+      (message "Captured to %s" filepath)
+      filepath)))
+
+(map! :leader
+      (:prefix ("n" . "notes")
+       :desc "Capture URL to raw/" "w" #'my/org-web-tools-capture-to-raw))
+
 (defun my/org-roam-capture-inbox ()
   (interactive)
   (org-roam-capture- :node (org-roam-node-create)

@@ -118,3 +118,5 @@
 (package! rainbow-delimiters)
 
 (package! markdown-mermaid)
+
+(package! org-web-tools)
