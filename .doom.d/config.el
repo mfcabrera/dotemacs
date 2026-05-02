@@ -544,34 +544,41 @@
 (use-package! org-web-tools
   :commands (org-web-tools-read-url-as-org
              org-web-tools-insert-link-for-url
-             org-web-tools-insert-web-page-as-entry)
-  :config
-  (defun my/org-web-tools-capture-to-raw (url)
-    "Capture URL content to resources/raw/ as an org file for the LLM wiki pipeline."
-    (interactive "sURL: ")
-    (let* ((timestamp (format-time-string "%Y%m%d%H%M%S"))
-           (content (org-web-tools--url-as-readable-org url))
-           (title (if (string-match "^\\*+ \\(.+\\)$" content)
-                      (match-string 1 content)
-                    "untitled"))
-           (slug (replace-regexp-in-string "[^a-zA-Z0-9]+" "-" (downcase title)))
-           (slug (string-trim slug "-" "-"))
-           (slug (if (> (length slug) 60) (substring slug 0 60) slug))
-           (filename (format "%s-%s.org" timestamp slug))
-           (filepath (expand-file-name filename
-                       (expand-file-name "resources/raw" org-roam-directory)))
-           (uuid (string-trim (shell-command-to-string "python3 -c \"import uuid; print(str(uuid.uuid4()))\""))))
-      (with-temp-file filepath
-        (insert (format ":PROPERTIES:\n:ID:       %s\n:END:\n" uuid))
-        (insert (format "#+title: %s\n" title))
-        (insert "#+filetags: :raw:\n")
-        (insert (format "#+date: %s\n" (format-time-string "[%Y-%m-%d %a]")))
-        (insert (format "#+roam_refs: %s\n\n" url))
-        (insert "* Source Content\n")
-        (insert (replace-regexp-in-string "^\\*" "**" content))
-        (insert "\n"))
-      (message "Captured to %s" filepath)
-      filepath)))
+             org-web-tools-insert-web-page-as-entry))
+
+(defun my/org-web-tools-capture-to-raw (url)
+  "Capture URL content to resources/raw/ as an org file for the LLM wiki pipeline."
+  (interactive "sURL: ")
+  (require 'org-web-tools)
+  (setq url (string-trim url))
+  (let* ((timestamp (format-time-string "%Y%m%d%H%M%S"))
+         (content (org-web-tools--url-as-readable-org url))
+         (raw-title (if (string-match "^\\*+ \\(.+\\)$" content)
+                        (match-string 1 content)
+                      "untitled"))
+         ;; Strip org link markup [[url][title]] → title, and trailing :tags:
+         (title (if (string-match "\\[\\[.+\\]\\[\\(.+?\\)\\]\\]" raw-title)
+                    (match-string 1 raw-title)
+                  raw-title))
+         (title (replace-regexp-in-string "\\s-*:[a-zA-Z:]+:\\s-*$" "" title))
+         (slug (replace-regexp-in-string "[^a-zA-Z0-9]+" "-" (downcase title)))
+         (slug (string-trim slug "-" "-"))
+         (slug (if (> (length slug) 60) (substring slug 0 60) slug))
+         (filename (format "%s-%s.org" timestamp slug))
+         (filepath (expand-file-name filename
+                     (expand-file-name "resources/raw" org-roam-directory)))
+         (uuid (string-trim (shell-command-to-string "python3 -c \"import uuid; print(str(uuid.uuid4()))\""))))
+    (with-temp-file filepath
+      (insert (format ":PROPERTIES:\n:ID:       %s\n:END:\n" uuid))
+      (insert (format "#+title: %s\n" title))
+      (insert "#+filetags: :raw:\n")
+      (insert (format "#+date: %s\n" (format-time-string "[%Y-%m-%d %a]")))
+      (insert (format "#+roam_refs: %s\n\n" url))
+      (insert "* Source Content\n")
+      (insert (replace-regexp-in-string "^\\*" "**" content))
+      (insert "\n"))
+    (message "Captured to %s" filepath)
+    filepath))
 
 (map! :leader
       (:prefix ("n" . "notes")
