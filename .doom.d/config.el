@@ -110,6 +110,14 @@
 
 (load! "bigui.el") ; personal functions
 
+;; Local-machine overrides. `local.el' is gitignored — set machine-specific
+;; toggles like `bigui/enable-org-roam-ui' here.
+(defvar bigui/enable-org-roam-ui t
+  "When non-nil, enable the org-roam-ui graph viewer and its websocket dep.")
+(let ((local-file (expand-file-name "local.el" doom-user-dir)))
+  (when (file-exists-p local-file)
+    (load! "local.el")))
+
 
 ;; Misc Options - many of the preferred options are set in the default doom
 ;; Emacs config
@@ -764,21 +772,17 @@
   ;; wrap around at edges
   (setq windmove-wrap-around t))
 
-(use-package! websocket
-  :after org-roam)
+(when bigui/enable-org-roam-ui
+  (use-package! websocket
+    :after org-roam)
 
-(use-package! org-roam-ui
-    :after org-roam ;; or :after org
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;;  :hook (after-init . org-roam-ui-mode)
+  (use-package! org-roam-ui
+    :after org-roam
     :config
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t)
-)
+          org-roam-ui-open-on-start t)))
 
 ;; Super agenda
 ;;
