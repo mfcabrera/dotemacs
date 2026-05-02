@@ -967,12 +967,12 @@ Returns a summary of reverted buffers."
                 :description "Sync the org-roam SQLite database. Call this after creating or modifying org files with :ID: properties so that org-roam links resolve correctly."
                 :args nil))
 
-  ;; Open file in Emacs
+  ;; Open file in Emacs (never replace the claude-code-ide terminal window)
   (defun my/mcp-open-file (file-path)
-    "Open FILE-PATH in Emacs and return confirmation."
+    "Open FILE-PATH in another window, preserving the claude-code terminal."
     (if (file-exists-p file-path)
         (progn
-          (find-file file-path)
+          (find-file-other-window file-path)
           (format "Opened %s" file-path))
       (format "Error: file not found: %s" file-path)))
 
