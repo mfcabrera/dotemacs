@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Personal Doom Emacs configuration for macOS. The active config lives in `.doom.d/` — the `oldconf/` directory is a legacy Prelude-based config and should not be modified.
+Personal Doom Emacs configuration for macOS. The active config lives in `.doom.d/` (symlinked to `~/.doom.d`) — the `oldconf/` directory is a legacy Prelude-based config and should not be modified.
 
 ## Key Files
 
@@ -28,6 +28,8 @@ doom sync -u
 doom doctor
 ```
 
+After changes to `config.el` only, no `doom sync` is needed — `M-x doom/reload` (or restarting Emacs) is enough.
+
 ## Architecture Notes
 
 **No evil-mode** — This config does NOT use vim keybindings. Evil is commented out in init.el. Uses default Emacs keybindings with `+smartparens`.
@@ -42,7 +44,7 @@ doom doctor
 - org-ref + org-roam-bibtex for bibliography management
 - Capture templates for todos, work items, reading backlog, blog ideas
 
-**Org file structure** — Agenda files are gathered recursively from `inbox/` and `projects/` and `areas/` subdirs under org-directory.
+**Org file structure** — Org files live in `~/PersonalDrive/org-notes/` with a PARA-like layout (`inbox/`, `projects/`, `areas/`, `resources/`, `archive/`). Agenda files are gathered recursively from `inbox/`, `projects/`, and `areas/`.
 
 **LLM integration** — gptel configured with custom directives, plus mcp.el for MCP servers (filesystem, memory, Google Calendar, Linear). llm-tool-collection provides additional gptel tools.
 
