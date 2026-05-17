@@ -241,8 +241,33 @@
          "* TODO %?\n SCHEDULED: %t\n  %i\n")
         ("w" "Todo - Work" entry (file+headline  org-default-work-file "Misc Tasks")
          "* TODO %?\n SCHEDULED: %t\n  %i\n")
-        ("p" "Paper / Article / Video to read" entry (file+headline  org-default-learning-file "Reading Backlog")
-         "* %a\n %i  " :immediate-finish 1)
+        ;; Reading Inbox capture — drops into inbox/Inbox.org "Reading Inbox"
+        ;; with structured properties. Triaged Sundays into areas/reading-list.org.
+        ("r" "Reading Inbox (article/video/repo)" entry
+         (file+headline org-default-notes-file "Reading Inbox")
+         "* %^{Title}
+:PROPERTIES:
+:CAPTURED: %U
+:EFFORT:   %^{Effort estimate (e.g. 0:20)|0:20}
+:URL:      %^{URL|%x}
+:SOURCE:   %^{Source (LinkedIn/X/colleague/blog/etc.)}
+:TYPE:     %^{Type|article|video|repo|paper|tweet|book}
+:END:
+
+Why I want this: %?
+
+%i" :empty-lines 1)
+        ;; Legacy capture: keeps backwards compatibility with old "p" muscle memory.
+        ;; Also lands in Reading Inbox so triage flow stays single-source.
+        ("p" "Paper / Article / Video to read (legacy → Reading Inbox)" entry
+         (file+headline org-default-notes-file "Reading Inbox")
+         "* %a
+:PROPERTIES:
+:CAPTURED: %U
+:EFFORT:   0:20
+:END:
+
+%i  " :immediate-finish 1)
         ("T" "Todo (with link)" entry (file+headline  org-default-notes-file "TASKS")
          "* TODO %?\n SCHEDULED: %t\n  %a\n %i\n")
         ;; Email capture templates - disabled (no longer using email integration)
@@ -304,7 +329,7 @@
   )
 
   (setq org-todo-keywords
-        '((sequence "TODO" "STARTED" "|"  "DONE" )))
+        '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)")))
   (setq org-tags-exclude-from-inheritance '("PROJECT" "CURRENT" "project" "current" "parked2026" "NOTE" "SERVER" "NEXT" "PLANNED" "AREA" "META" "NEXT" "crypt" "desparche" "writing" "reading" "area" "chores"))
   (setq org-enforce-todo-dependencies t)
   (setq org-agenda-skip-deadline-if-done t)
@@ -341,6 +366,51 @@
         ("▸" . "▾")
         ("▹" . "▿")
         ("▸" . "▾")))
+
+  ;; ----------------------------------------------------------------
+  ;; Stalled-project detector.
+  ;; Skips a :PROJECT:current: heading from the agenda view when its
+  ;; subtree contains at least one actionable descendant:
+  ;;   - TODO/STARTED with :next: or :today: tag, OR
+  ;;   - any heading with SCHEDULED within the next 7 days.
+  ;; Returns nil to KEEP the heading (i.e., it IS stalled), or the
+  ;; position to skip-to in order to HIDE it.
+  ;; ----------------------------------------------------------------
+  (defun my/org-agenda-skip-if-project-actionable ()
+    "Skip project headlines that have any actionable descendant.
+Used by \"Stalled current projects\" agenda command (key 'S').
+
+A project is *actionable* (and thus hidden) when ANY of:
+  - subtree contains a TODO/STARTED heading (any tag), OR
+  - subtree contains SCHEDULED within next 7 days, OR
+  - the project heading itself is in WAITING state (legitimately blocked).
+
+Returns nil to keep (= stalled), or position to skip-to (= actionable)."
+    (let* ((entry-end (save-excursion (org-end-of-subtree t t)))
+           (project-level (org-current-level))
+           (project-todo (org-get-todo-state))
+           (now (current-time))
+           (cutoff (time-add now (days-to-time 7)))
+           (back-cutoff (time-subtract now (days-to-time 2)))
+           (actionable nil))
+      ;; WAITING at project level = legitimately blocked, not stalled
+      (when (member project-todo '("WAITING"))
+        (setq actionable t))
+      (save-excursion
+        (forward-line 1)
+        (while (and (not actionable) (< (point) entry-end))
+          (when (and (looking-at org-heading-regexp)
+                     (> (org-current-level) project-level))
+            (let ((todo (org-get-todo-state))
+                  (sched (org-get-scheduled-time (point))))
+              (when (member todo '("TODO" "STARTED"))
+                (setq actionable t))
+              (when (and sched
+                         (time-less-p sched cutoff)
+                         (time-less-p back-cutoff sched))
+                (setq actionable t))))
+          (forward-line 1)))
+      (when actionable entry-end)))
 
   ;; Custom commands!
   ;;
@@ -412,7 +482,7 @@
           ((org-agenda-tag-filter-preset '("-@work")) )
           )
         ("R" "Currently Learning/Studying"
-         ((tags "@learning+PROJECT+current-@work"))
+         ((tags "learning+current"))
 
          )
 
@@ -448,6 +518,21 @@
 
 
 
+        ("n" "Stale :next: pool (not in scratchpad)"
+         ;; All :next: items not currently tagged :today:
+         ;; Use this for weekly triage of the backlog pool — what's been sitting too long?
+         ((tags "next-today/TODO|STARTED"
+                ((org-agenda-overriding-header "Stale :next: pool — items not in today's scratchpad")
+                 (org-agenda-sorting-strategy '(priority-down tag-up))
+                 (org-super-agenda-groups
+                  '((:name "Work" :tag "@work")
+                    (:name "Personal" :and (:not (:tag "@work")))))))))
+
+        ("N" "Stale :next: pool (Work only)"
+         ((tags "next-today+@work/TODO|STARTED"
+                ((org-agenda-overriding-header "Stale :next: pool (Work) — not in today's scratchpad")
+                 (org-agenda-sorting-strategy '(priority-down tag-up))))))
+
         ("E" "Errands review"
          ((agenda "" (
                       (org-agenda-ndays 5)          ;; agenda will start in week view
@@ -468,6 +553,22 @@
            )
          )
 
+        ;; ============================================================
+        ;; Stalled current projects
+        ;; A :PROJECT:current: heading is "stalled" when its subtree has
+        ;; no descendant TODO/STARTED tagged :next: or :today: AND
+        ;; no future SCHEDULED within 7 days.
+        ;; ============================================================
+        ("S" "Stalled current projects (no :next:/:today:/SCHEDULED)"
+         ((tags "PROJECT+current-1on1"
+                ((org-agenda-overriding-header "Stalled :PROJECT:current: — needs a next action")
+                 (org-agenda-skip-function
+                  '(my/org-agenda-skip-if-project-actionable))
+                 (org-super-agenda-groups
+                  '((:name "Work" :tag "@work")
+                    (:name "Personal" :and (:not (:tag "@work"))))))))
+         )
+
 
         ("L" "Weekly Plan"
          ( (agenda)
@@ -476,6 +577,51 @@
 
            )
          )
+
+        ;; ============================================================
+        ;; Reading workflow agendas
+        ;; Doctrine: resources/zettelkasten/20260506100000-reading-workflow.org
+        ;; Implementation: areas/reading-list.org
+        ;; ============================================================
+        ("r" . "Reading agendas")
+
+        ("ra" "Reading — Active + full queue"
+         ((tags "current+reading"
+                ((org-agenda-overriding-header "📚 Active Reads")))
+          (tags "queue+quick"
+                ((org-agenda-overriding-header "⚡ Quick Queue (≤30 min)")
+                 (org-agenda-sorting-strategy '(priority-down effort-up))))
+          (tags "queue+medium"
+                ((org-agenda-overriding-header "📖 Medium Queue (30 min – 3h)")
+                 (org-agenda-sorting-strategy '(priority-down effort-up))))
+          (tags "queue+deep"
+                ((org-agenda-overriding-header "📕 Deep Queue (>3h)")
+                 (org-agenda-sorting-strategy '(priority-down))))
+          (tags "reading+capture"
+                ((org-agenda-overriding-header "📥 Reading Inbox (needs triage)")))))
+
+        ("r3" "Reading — Quick (≤30 min)"
+         ((tags "queue+quick"
+                ((org-agenda-overriding-header "⚡ Quick reads — pick one (≤30 min)")
+                 (org-agenda-sorting-strategy '(priority-down effort-up))))))
+
+        ("r6" "Reading — Up to 60 min"
+         ((tags "queue+quick|queue+medium"
+                ((org-agenda-overriding-header "📖 Reads up to 60 min")
+                 (org-agenda-sorting-strategy '(effort-up priority-down))
+                 (org-agenda-skip-function
+                  '(org-agenda-skip-entry-if 'todo '("DONE" "PARKED" "DROPPED")))))))
+
+        ("rd" "Reading — Deep (books / courses)"
+         ((tags "queue+deep"
+                ((org-agenda-overriding-header "📕 Deep queue — books & courses")
+                 (org-agenda-sorting-strategy '(priority-down))))
+          (tags "current+reading"
+                ((org-agenda-overriding-header "📖 Currently active deep reads")))))
+
+        ("ri" "Reading Inbox — needs triage"
+         ((tags "reading+capture"
+                ((org-agenda-overriding-header "📥 Reading Inbox — Sunday triage (15 min)")))))
         )
 
       )
@@ -1083,6 +1229,398 @@ Returns a summary of reverted buffers."
                 :function #'my/mcp-org-agenda-redo
                 :description "Refresh all open org-agenda buffers. Call after modifying scheduled/deadline timestamps or TODO states."
                 :args nil))
+
+  ;; ----------------------------------------------------------------
+  ;; Generic agenda runner — lets Claude call any custom command by key.
+  ;; Pair this with listAgendaCommands so Claude can discover what's
+  ;; available instead of asking. Both functions are the source of truth
+  ;; for "what does my org actually say?" — preferred over file grepping
+  ;; because they respect tag inheritance, archive skip, skip-functions,
+  ;; repeaters, etc.
+  ;; ----------------------------------------------------------------
+  (defun my/mcp-run-agenda-command (key)
+    "Run org-agenda custom command KEY and return the buffer as a string.
+KEY is the dispatcher key as registered in `org-agenda-custom-commands'
+(e.g., \"S\" for stalled projects, \"n\" for stale :next: pool)."
+    (require 'org-agenda)
+    (let ((org-agenda-buffer-name "*MCP-Agenda*")
+          (org-agenda-sticky nil)
+          (org-agenda-window-setup 'current-window))
+      (condition-case err
+          (progn
+            (org-agenda nil key)
+            (with-current-buffer org-agenda-buffer-name
+              (let ((content (buffer-string)))
+                (kill-buffer)
+                content)))
+        (error (format "Error running agenda command '%s': %s"
+                       key (error-message-string err))))))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "runAgendaCommand"
+                :function #'my/mcp-run-agenda-command
+                :description "Run any org-agenda custom command by its dispatcher key and return the rendered view as text. Examples: 'S' = Stalled current projects, 'n' = Stale :next: pool, 'R' = Currently Learning, 'h' = Personal/Home, 'w' = Work. Use listAgendaCommands to discover keys. Prefer this over grepping org files — the agenda respects tag inheritance, archives, skip-functions, and repeaters."
+                :args '((:name "key" :type string :description "Dispatcher key (e.g., 'S', 'n', 'R', 'h', 'w', 'D')"))))
+
+  (defun my/mcp-list-agenda-commands ()
+    "Return all org-agenda custom commands as a readable list.
+Handles three shapes:
+  (key . \"Prefix label\")           — prefix key
+  (key \"Label\" type matcher …)     — flat command
+  (key \"Label\" ((type matcher …))) — block command"
+    (require 'org-agenda)
+    (if (null org-agenda-custom-commands)
+        "No org-agenda-custom-commands defined."
+      (mapconcat
+       (lambda (cmd)
+         (let ((key (car cmd))
+               (rest (cdr cmd)))
+           (cond
+            ;; Prefix key: (key . "Label")
+            ((stringp rest)
+             (format "  %s  [prefix]  %s" key rest))
+            ;; Standard command: (key "Label" ...)
+            ((and (listp rest) (stringp (car rest)))
+             (let* ((label (car rest))
+                    (body (cdr rest))
+                    (first (car body))
+                    (kind (cond
+                           ((null first) "?")
+                           ((symbolp first) (symbol-name first))
+                           ((consp first)
+                            (let ((sub (car first)))
+                              (cond
+                               ((symbolp sub) (symbol-name sub))
+                               (t "block"))))
+                           (t "?")))
+                    (matcher (cond
+                              ((and (consp first) (stringp (cadr first)))
+                               (cadr first))
+                              ((stringp (cadr body))
+                               (cadr body))
+                              (t ""))))
+               (format "  %s  [%s]  %s%s"
+                       key kind label
+                       (if (and matcher (not (string-empty-p matcher)))
+                           (format "  →  %s" matcher)
+                         ""))))
+            (t (format "  %s  [unknown shape]" key)))))
+       org-agenda-custom-commands
+       "\n")))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "listAgendaCommands"
+                :function #'my/mcp-list-agenda-commands
+                :description "List all org-agenda custom commands available via C-c a. Returns key, type, label, and tag matcher (when applicable). Call this before runAgendaCommand to discover what's available."
+                :args nil))
+
+  (defun my/mcp-run-agenda-tags-matcher (match)
+    "Run an ad-hoc org-agenda tags search with MATCH and return the result.
+MATCH is an org tag/property matcher string (e.g.,
+\"learning+current\", \"PROJECT+current-@work\",
+\"next-today/TODO|STARTED\")."
+    (require 'org-agenda)
+    (let ((org-agenda-buffer-name "*MCP-Agenda-Match*")
+          (org-agenda-sticky nil)
+          (org-agenda-window-setup 'current-window))
+      (condition-case err
+          (progn
+            (org-tags-view nil match)
+            (with-current-buffer org-agenda-buffer-name
+              (let ((content (buffer-string)))
+                (kill-buffer)
+                content)))
+        (error (format "Error running tags matcher '%s': %s"
+                       match (error-message-string err))))))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "runAgendaTagsMatcher"
+                :function #'my/mcp-run-agenda-tags-matcher
+                :description "Run an ad-hoc org-agenda tag/property matcher and return the result. Use for slices not saved as custom commands. Examples: 'learning+current', 'PROJECT+current-@work', 'next-today/TODO|STARTED'. Syntax: org-mode tag matcher (see (org)Matching tags and properties). Prefer runAgendaCommand for saved views."
+                :args '((:name "match" :type string :description "Org tag/property matcher (e.g., 'learning+current')"))))
+
+  (defun my/mcp-get-org-agenda-files ()
+    "Return the list of files org-agenda considers in-scope."
+    (require 'org-agenda)
+    (let ((files (org-agenda-files)))
+      (if files
+          (mapconcat #'identity files "\n")
+        "No agenda files configured.")))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "getOrgAgendaFiles"
+                :function #'my/mcp-get-org-agenda-files
+                :description "Return the list of files org-agenda considers in-scope. Use this to know which files agenda queries cover before grepping or analyzing the second brain."
+                :args nil))
+
+  ;; ----------------------------------------------------------------
+  ;; runOrgQuery — typed tag/property query that returns JSON instead of a
+  ;; rendered agenda buffer. Eliminates buffer-text parsing fragility.
+  ;; ----------------------------------------------------------------
+  (defun my/mcp--time-iso (time)
+    "Format a TIME as ISO 8601 date string, or nil."
+    (when time (format-time-string "%Y-%m-%d" time)))
+
+  (defun my/mcp--headline-to-plist (fields)
+    "At a headline, return a plist with the requested FIELDS.
+FIELDS is a list of strings: title, todo, tags, scheduled, deadline,
+priority, category, level, file, line, body, id, properties, effort."
+    (let* ((comps (org-heading-components))
+           (level (nth 0 comps))
+           (todo (nth 2 comps))
+           (priority (nth 3 comps))
+           (title (nth 4 comps))
+           (tags (org-get-tags nil nil))
+           (sched (org-get-scheduled-time (point)))
+           (dl (org-get-deadline-time (point)))
+           (file (buffer-file-name))
+           (line (line-number-at-pos))
+           (cat (org-get-category))
+           (id (org-entry-get nil "ID"))
+           (effort (org-entry-get nil "Effort"))
+           (result '()))
+      (dolist (f fields)
+        (pcase f
+          ("title" (push (cons "title" (or title "")) result))
+          ("todo"  (push (cons "todo" (or todo nil)) result))
+          ("tags"  (push (cons "tags" (vconcat tags)) result))
+          ("scheduled" (push (cons "scheduled" (or (my/mcp--time-iso sched) nil)) result))
+          ("deadline"  (push (cons "deadline" (or (my/mcp--time-iso dl) nil)) result))
+          ("priority"  (push (cons "priority" (if priority (char-to-string priority) nil)) result))
+          ("category"  (push (cons "category" (or cat "")) result))
+          ("level"     (push (cons "level" level) result))
+          ("file"      (push (cons "file" (or file "")) result))
+          ("line"      (push (cons "line" line) result))
+          ("id"        (push (cons "id" (or id nil)) result))
+          ("effort"    (push (cons "effort" (or effort nil)) result))
+          ("body"
+           (let ((body (save-excursion
+                         (org-end-of-meta-data t)
+                         (buffer-substring-no-properties
+                          (point)
+                          (or (save-excursion (outline-next-heading) (point))
+                              (point-max))))))
+             (push (cons "body" (string-trim body)) result)))
+          ("properties"
+           (push (cons "properties"
+                       (or (org-entry-properties) nil))
+                 result))))
+      (nreverse result)))
+
+  (defun my/mcp-run-org-query (query-json)
+    "Run a typed org query and return JSON.
+QUERY-JSON is a JSON object with:
+  type    : \"tags\" | \"tags-todo\" | \"todo\"  (required)
+  match   : org tag/property matcher string (required for tags*)
+  todo    : org TODO regex (for type=\"todo\")
+  fields  : list of field names to include (default: title, todo, tags, scheduled, file, line)
+  limit   : max results (default 100)
+  files   : list of files (default: org-agenda-files)"
+    (require 'org)
+    (require 'org-agenda)
+    (require 'json)
+    (let* ((q (json-parse-string query-json :object-type 'alist :array-type 'list))
+           (qtype (alist-get 'type q))
+           (match (alist-get 'match q))
+           (todo-re (alist-get 'todo q))
+           (fields (or (alist-get 'fields q)
+                       '("title" "todo" "tags" "scheduled" "file" "line")))
+           (limit (or (alist-get 'limit q) 100))
+           (files (or (alist-get 'files q) (org-agenda-files)))
+           (results '())
+           (count 0))
+      (condition-case err
+          (progn
+            (cond
+             ((member qtype '("tags" "tags-todo"))
+              (org-map-entries
+               (lambda ()
+                 (when (< count limit)
+                   (push (my/mcp--headline-to-plist fields) results)
+                   (setq count (1+ count))))
+               match
+               files
+               (when (string= qtype "tags-todo") 'todo)))
+             ((string= qtype "todo")
+              (dolist (file files)
+                (with-current-buffer (find-file-noselect file)
+                  (org-map-entries
+                   (lambda ()
+                     (when (and (< count limit)
+                                (or (null todo-re)
+                                    (string-match-p todo-re (or (org-get-todo-state) ""))))
+                       (push (my/mcp--headline-to-plist fields) results)
+                       (setq count (1+ count))))
+                   nil 'file))))
+             (t (error "Unknown query type: %s" qtype)))
+            (json-encode (nreverse results)))
+        (error (format "{\"error\": \"%s\"}" (error-message-string err))))))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "runOrgQuery"
+                :function #'my/mcp-run-org-query
+                :description "Run a typed org-mode query and return structured JSON. Eliminates the need to parse rendered agenda text. Query is a JSON object: {type: 'tags'|'tags-todo'|'todo', match: '<matcher>', fields: [...], limit: N, files: [...]}. Example: {\"type\":\"tags-todo\",\"match\":\"PROJECT+current\",\"fields\":[\"title\",\"todo\",\"tags\",\"file\",\"scheduled\"],\"limit\":50}. Available fields: title, todo, tags, scheduled, deadline, priority, category, level, file, line, body, id, properties, effort."
+                :args '((:name "query_json" :type string :description "JSON object describing the query"))))
+
+  ;; ----------------------------------------------------------------
+  ;; structuredOrgEdit — typed mutations on org headings.
+  ;; Each operation is auditable, idempotent-where-possible, and
+  ;; reverts buffers from disk after writing so Emacs stays in sync.
+  ;;
+  ;; Operations:
+  ;;   markDone     : set state to DONE + CLOSED timestamp
+  ;;   markCancel   : set state to CANCELED + CLOSED timestamp
+  ;;   markTodo     : set state to TODO
+  ;;   markStarted  : set state to STARTED
+  ;;   setSchedule  : SCHEDULED: <date>   (target gets/replaces schedule)
+  ;;   clearSchedule: remove SCHEDULED line
+  ;;   setDeadline  : DEADLINE: <date>
+  ;;   addTag       : add tag if not present
+  ;;   removeTag    : remove tag if present
+  ;;   setPriority  : set [#A|B|C] cookie (or remove with "")
+  ;;   setProperty  : set :KEY: value in property drawer
+  ;;
+  ;; Target is identified by ID (preferred) or file+line.
+  ;; ----------------------------------------------------------------
+  (defun my/mcp--find-target (target)
+    "Move point to TARGET headline. Returns t on success, nil otherwise.
+TARGET is an alist: ((id . \"uuid\")) or ((file . \"path\") (line . N))
+or ((file . \"path\") (title . \"exact title\"))."
+    (let ((id (alist-get 'id target))
+          (file (alist-get 'file target))
+          (line (alist-get 'line target))
+          (title (alist-get 'title target))
+          (subtitle (alist-get 'subtitle target)))
+      (cond
+       ;; ID + subtitle: jump to ID, then descend into subtree to find subtitle.
+       ;; Use this when the scratchpad has [[id:project-id]] but you want
+       ;; to mutate a specific TODO under that project.
+       ((and id subtitle)
+        (let ((loc (org-id-find id 'marker)))
+          (when loc
+            (set-buffer (marker-buffer loc))
+            (goto-char loc)
+            (org-back-to-heading t)
+            (let* ((parent-level (org-current-level))
+                   (subtree-end (save-excursion (org-end-of-subtree t t)))
+                   (found nil))
+              (forward-line 1)
+              (while (and (not found) (< (point) subtree-end))
+                (when (and (looking-at org-heading-regexp)
+                           (> (org-current-level) parent-level)
+                           (string-match-p
+                            (regexp-quote subtitle)
+                            (or (org-get-heading t t t t) "")))
+                  (setq found t))
+                (unless found (forward-line 1)))
+              found))))
+       ;; ID only: jump to the heading bearing that ID.
+       (id
+        (let ((loc (org-id-find id 'marker)))
+          (when loc
+            (set-buffer (marker-buffer loc))
+            (goto-char loc)
+            t)))
+       ((and file line)
+        (when (file-exists-p file)
+          (set-buffer (find-file-noselect file))
+          (goto-char (point-min))
+          (forward-line (1- line))
+          (org-back-to-heading t)
+          t))
+       ((and file title)
+        (when (file-exists-p file)
+          (set-buffer (find-file-noselect file))
+          (goto-char (point-min))
+          (when (re-search-forward
+                 (format "^\\*+\\s-+\\(?:[A-Z]+ \\)?\\(?:\\[#[ABCD]\\] \\)?%s"
+                         (regexp-quote title))
+                 nil t)
+            (org-back-to-heading t)
+            t))))))
+
+  (defun my/mcp--save-and-revert ()
+    "Save current buffer, then revert all org buffers from disk."
+    (save-buffer)
+    (dolist (buf (buffer-list))
+      (when (and (buffer-file-name buf)
+                 (string-suffix-p ".org" (buffer-file-name buf))
+                 (not (eq buf (current-buffer)))
+                 (file-exists-p (buffer-file-name buf)))
+        (with-current-buffer buf
+          (when (not (buffer-modified-p))
+            (revert-buffer t t t))))))
+
+  (defun my/mcp-structured-org-edit (edit-json)
+    "Apply a typed mutation to an org heading. EDIT-JSON is:
+  {
+    op: <operation name>,
+    target: {id: \"uuid\"} | {file: \"...\", line: N} | {file: \"...\", title: \"...\"},
+    value: <op-specific>   // e.g. \"<2026-05-20 Tue>\" for setSchedule, \"A\" for setPriority
+  }"
+    (require 'org)
+    (require 'json)
+    (let* ((edit (json-parse-string edit-json :object-type 'alist :array-type 'list))
+           (op (alist-get 'op edit))
+           (target (alist-get 'target edit))
+           (value (alist-get 'value edit)))
+      (condition-case err
+          (save-excursion
+            (unless (my/mcp--find-target target)
+              (error "Target not found: %S" target))
+            (let ((before-state (org-get-todo-state))
+                  (heading (substring-no-properties (org-get-heading t t t t))))
+              (pcase op
+                ("markDone"     (org-todo "DONE"))
+                ("markCancel"   (org-todo "CANCELED"))
+                ("markTodo"     (org-todo "TODO"))
+                ("markStarted"  (org-todo "STARTED"))
+                ("setSchedule"  (org-schedule nil value))
+                ("clearSchedule" (org-schedule '(4)))   ;; C-u prefix = remove
+                ("setDeadline"  (org-deadline nil value))
+                ("clearDeadline" (org-deadline '(4)))
+                ("addTag"
+                 (let ((tags (org-get-tags nil t)))
+                   (unless (member value tags)
+                     (org-set-tags (append tags (list value))))))
+                ("removeTag"
+                 (org-set-tags (delete value (org-get-tags nil t))))
+                ("setPriority"
+                 (cond
+                  ((or (null value) (string-empty-p value))
+                   (org-priority ?\s))
+                  (t (org-priority (string-to-char value)))))
+                ("setProperty"
+                 (let ((kv (split-string value "=" t)))
+                   (unless (= 2 (length kv))
+                     (error "setProperty value must be 'KEY=VALUE', got: %s" value))
+                   (org-set-property (car kv) (cadr kv))))
+                (_ (error "Unknown op: %s" op)))
+              (my/mcp--save-and-revert)
+              (json-encode
+               `(("ok" . t)
+                 ("op" . ,op)
+                 ("heading" . ,heading)
+                 ("before_state" . ,(or before-state nil))
+                 ("after_state" . ,(or (org-get-todo-state) nil))
+                 ("file" . ,(buffer-file-name))
+                 ("line" . ,(line-number-at-pos))))))
+        (error (json-encode
+                `(("ok" . :json-false)
+                  ("op" . ,op)
+                  ("error" . ,(error-message-string err))))))))
+
+  (add-to-list 'claude-code-ide-mcp-server-tools
+               (claude-code-ide-make-tool
+                :name "structuredOrgEdit"
+                :function #'my/mcp-structured-org-edit
+                :description "Apply a typed mutation to a single org heading. Auditable, idempotent. JSON: {op, target, value}. Ops: markDone, markCancel, markTodo, markStarted, setSchedule, clearSchedule, setDeadline, clearDeadline, addTag, removeTag, setPriority, setProperty. Target shapes (try in order): (1) {id:'uuid', subtitle:'substring'} — jump to ID, then descend to child whose heading contains 'subtitle'. Use this when a scratchpad link [[id:...]] points to a project but you want to mutate a specific TODO under it. (2) {id:'uuid'} — heading that owns this ID. (3) {file:'path', line:N} — heading at/before this line. (4) {file:'path', title:'exact match'} — first heading matching title in file. Example: {\"op\":\"markDone\",\"target\":{\"id\":\"abc-123\",\"subtitle\":\"Configurar pago\"}}. For setSchedule, value is org timestamp like '<2026-05-20 Tue>'. For setProperty, value is 'KEY=VALUE'. Returns JSON with ok, before/after state, and file:line."
+                :args '((:name "edit_json" :type string :description "JSON object describing the edit"))))
 
   ;; Anki: push notes from a specific org file to Anki via AnkiConnect
   (defun my/mcp-anki-push-notes (file-path)
